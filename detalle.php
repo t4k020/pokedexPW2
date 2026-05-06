@@ -1,113 +1,146 @@
 <?php
-// 1. Obtener el ID de la URL
-$id = isset($_GET['id']) ? $_GET['id'] : 1;
+// 1. Conexión a la base de datos
+$conn = new mysqli("localhost", "root", "", "pokedex");
 
-// 2. Obtener datos básicos del Pokémon (Estadísticas, altura, peso)
-$data = json_decode(file_get_contents("https://pokeapi.co/api/v2/pokemon/$id"), true);
-
-// 3. Obtener la descripción y datos curiosos (Species)
-$species = json_decode(file_get_contents($data['species']['url']), true);
-
-// Buscamos la descripción en español
-$descripcion = "";
-foreach ($species['flavor_text_entries'] as $entry) {
-    if ($entry['language']['name'] == 'es') {
-        $descripcion = $entry['flavor_text'];
-        break; // Nos quedamos con la primera que encontremos
-    }
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
 }
 
-// Datos Curiosos
-$categoria = "";
-foreach ($species['genera'] as $gen) {
-    if ($gen['language']['name'] == 'es') {
-        $categoria = $gen['genus'];
-        break;
-    }
-}
+// 2. Obtener el ID de la URL (usando el 'id' incremental de la base de datos)
+$id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
-$nombre = ucfirst($data['name']);
-$imagen = $data['sprites']['other']['official-artwork']['front_default'];
-$altura = $data['height'] / 10; // Convertir a metros
-$peso = $data['weight'] / 10;   // Convertir a kilos
+// 3. Consultar los datos del Pokémon en la DB local
+$sql = "SELECT * FROM pokemon WHERE id = $id";
+$result = $conn->query($sql);
+
+if ($result && $result->num_rows > 0) {
+    $p = $result->fetch_assoc();
+
+    // Mapear datos
+    $nombre      = ucfirst($p['nombre']);
+    $id_pokedex  = $p['idNoIncremental'];
+    $imagen      = "assets/" . $p['dirImagen'];
+    $descripcion = $p['descripcion'];
+
+    // Agrupar tipos y habilidades (quitando los que sean NULL)
+    $tipos       = array_filter([$p['tipo1'], $p['tipo2']]);
+    $habilidades = array_filter([$p['habilidad1'], $p['habilidad2'], $p['habilidad3'], $p['habilidad4']]);
+} else {
+    die("¡Pokémon no encontrado en la DB!");
+}
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalle de <?php echo $nombre; ?></title>
-    <link rel="stylesheet" href="estilos.css"> <!-- Reutiliza tus estilos -->
-    <style>
-        .detalle-container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            gap: 40px;
-        }
-        .img-container { flex: 1; text-align: center; }
-        .img-container img { width: 100%; max-width: 300px; }
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Detalle de <?php echo $nombre; ?></title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
 
-        .info-container { flex: 1; }
-        .stats-bar {
-            background: #eee;
-            border-radius: 10px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        .fill {
-            height: 10px;
-            background: #e67e22;
-        }
-        .badge {
-            background: #f1f1f1;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-right: 5px;
-        }
-        .desc { font-style: italic; color: #555; margin: 20px 0; }
-    </style>
-</head>
-<body>
+            .detalle-container {
+                max-width: 900px;
+                margin: 50px auto;
+                background: white;
+                border-radius: 20px;
+                display: flex;
+                padding: 40px;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                gap: 50px;
+                border-top: 15px solid #e67e22;
+            }
 
-<div class="detalle-container">
-    <div class="img-container">
-        <img src="<?php echo $imagen; ?>" alt="<?php echo $nombre; ?>">
-        <h2>#<?php echo $id; ?></h2>
-    </div>
+            .img-container { flex: 1; text-align: center; background: #f9f9f9; border-radius: 15px; padding: 20px; }
+            .img-container img { width: 100%; max-width: 350px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
+            .pokedex-number { font-size: 2rem; color: #ccc; font-weight: bold; margin-top: 10px; }
 
-    <div class="info-container">
-        <h1><?php echo $nombre; ?></h1>
-        <p><strong>Categoría:</strong> <?php echo $categoria; ?></p>
+            .info-container { flex: 1.5; }
+            h1 { font-size: 3rem; margin: 0; color: #333; text-transform: capitalize; }
 
-        <div class="desc">
-            "<?php echo $descripcion; ?>"
+            .tipo-badge {
+                display: inline-block;
+                padding: 8px 20px;
+                border-radius: 50px;
+                background: #78c850;
+                color: white;
+                font-weight: bold;
+                margin-right: 10px;
+                margin-top: 10px;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+            }
+
+            .desc-box {
+                background: #fff8f0;
+                border-left: 5px solid #e67e22;
+                padding: 20px;
+                margin: 30px 0;
+                font-style: italic;
+                font-size: 1.1rem;
+                color: #444;
+                line-height: 1.6;
+            }
+
+            .skills-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .skill-item {
+                background: #eee;
+                padding: 12px;
+                border-radius: 10px;
+                text-align: center;
+                font-weight: 500;
+                color: #555;
+                text-transform: capitalize;
+            }
+
+            .btn-volver {
+                display: inline-block;
+                margin-top: 40px;
+                color: #e67e22;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 1.1rem;
+                transition: 0.2s;
+            }
+            .btn-volver:hover { transform: translateX(-5px); }
+        </style>
+    </head>
+    <body>
+
+    <div class="detalle-container">
+        <div class="img-container">
+            <img src="<?php echo $imagen; ?>" alt="<?php echo $nombre; ?>">
+            <div class="pokedex-number">#<?php echo $id_pokedex; ?></div>
         </div>
 
-        <div class="badges">
-            <span class="badge">Altura: <?php echo $altura; ?> m</span>
-            <span class="badge">Peso: <?php echo $peso; ?> kg</span>
-        </div>
+        <div class="info-container">
+            <h1><?php echo $nombre; ?></h1>
 
-        <h3>Estadísticas de combate</h3>
-        <?php foreach ($data['stats'] as $s): ?>
-            <div>
-                <small><?php echo strtoupper($s['stat']['name']); ?>: <?php echo $s['base_stat']; ?></small>
-                <div class="stats-bar">
-                    <div class="fill" style="width: <?php echo ($s['base_stat'] > 100 ? 100 : $s['base_stat']); ?>%"></div>
-                </div>
+            <div class="types">
+                <?php foreach ($tipos as $t): ?>
+                    <span class="tipo-badge"><?php echo $t; ?></span>
+                <?php endforeach; ?>
             </div>
-        <?php endforeach; ?>
 
-        <br>
-        <a href="index.php" style="color: #e67e22; text-decoration: none; font-weight: bold;">← Volver a la aldea</a>
+            <div class="desc-box">
+                "<?php echo $descripcion; ?>"
+            </div>
+
+            <h3>Habilidades de combate</h3>
+            <div class="skills-grid">
+                <?php foreach ($habilidades as $h): ?>
+                    <div class="skill-item"><?php echo $h; ?></div>
+                <?php endforeach; ?>
+            </div>
+
+            <a href="index.php" class="btn-volver">← Volver a la aldea</a>
+        </div>
     </div>
-</div>
 
-</body>
-</html>
+    </body>
+    </html>
+<?php $conn->close(); ?>

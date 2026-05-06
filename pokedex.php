@@ -1,27 +1,20 @@
 <?php
-// 1. Generar un ID aleatorio entre 1 y 1025
-$id_random = rand(1, 1025);
 
-// 2. Construir la URL de la API con ese ID
-$url = "https://pokeapi.co/api/v2/pokemon/" . $id_random;
 
-// 3. Obtener los datos (usando el stream wrapper file_get_contents)
-$response = @file_get_contents($url);
+$conn = new mysqli("localHost", "root", "", "pokedex");
 
-if ($response === false) {
-    $nombre = "Desconocido";
-    $imagen = "";
-    $tipos = ["???"];
-    $habilidades = ["No disponible"];
-} else {
-    $raw_data = json_decode($response, true);
-
-    // 4. Mapear los datos que nos interesan
-    $nombre      = $raw_data['name'];
-    $imagen      = $raw_data['sprites']['other']['official-artwork']['front_default'];
-    $tipos       = array_map(fn($t) => $t['type']['name'], $raw_data['types']);
-    $habilidades = array_slice(array_map(fn($h) => $h['move']['name'], $raw_data['moves']), 0, 4);
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
 }
+
+// 2. Obtener un Pokémon aleatorio de la base de datos
+// Usamos ORDER BY RAND() para obtener uno al azar y LIMIT 1
+$sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+$result = $conn->query($sql);
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -165,6 +158,14 @@ if ($response === false) {
             text-align: center; width: 300px; border-top: 10px solid #ef5350;
         }
 
+        .pokemon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
         .card-actions {
             position: relative;
             top: 10px;
@@ -255,43 +256,54 @@ if ($response === false) {
     <button type="submit">Buscar</button>
 </form>
 
-<div class="card">
-    <div class="card-actions">
-        <a href="editar.php?id=<?php echo $id_random; ?>" class="btn-action edit" title="Editar">
-            ✎
-        </a>
-        <a href="borrar.php?id=<?php echo $id_random; ?>" class="btn-action delete" title="Borrar" onclick="return confirm('¿Seguro que quieres liberar a este Pokémon?')">
-            ×
-        </a>
-    </div>
+<div class="pokemon-grid">
+    <?php
+    // 3. El Bucle Mágico: Mientras haya filas en la DB, crea una carta
+    if ($result->num_rows > 0):
+        while($row = $result->fetch_assoc()):
 
-    <a href="detalle.php?id=<?php echo $id_random; ?>" class="pokemon-link">
-        <img src="<?php echo $imagen; ?>" alt="Pokemon" class="card-img">
-    </a>
+            // Procesamos los datos de la fila actual
+            $ruta_imagen = "assets/" . $row['dirImagen'];
+            $tipos = array_filter([$row['tipo1'], $row['tipo2']]); // Crea array y quita nulos
+            $habilidades = array_filter([$row['habilidad1'], $row['habilidad2'], $row['habilidad3'], $row['habilidad4']]);
+            ?>
 
-    <span>#<?php echo $id_random; ?></span>
-    <h1><?php echo $nombre; ?></h1>
+            <div class="card">
+                <div class="card-actions">
+                    <a href="editar.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
+                    <a href="borrar.php?id=<?php echo $row['id']; ?>" class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                </div>
 
-    <div>
-        <?php foreach ($tipos as $tipo): ?>
-            <span class="tipo"><?php echo $tipo; ?></span>
-        <?php endforeach; ?>
-    </div>
+                <a href="detalle.php?id=<?php echo $row['id']; ?>">
+                    <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $row['nombre']; ?>">
+                </a>
 
-    <div style="text-align: left; margin-top: 20px;">
-        <strong>Habilidades:</strong>
-        <ul>
-            <?php foreach ($habilidades as $h): ?>
-                <li><?php echo str_replace('-', ' ', $h); ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
+                <p style="color: #888; margin: 0;">#<?php echo $row['idNoIncremental']; ?></p>
+                <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $row['nombre']; ?></h2>
 
-    <!-- Botón para recargar la página -->
-    <button class="btn-random" onclick="window.location.reload();">
-        ¡OTRO POKÉMON!
-    </button>
+                <div>
+                    <?php foreach ($tipos as $t): ?>
+                        <span class="tipo"><?php echo $t; ?></span>
+                    <?php endforeach; ?>
+                </div>
 
+                <div style="text-align: left; margin-top: 15px; font-size: 0.9rem;">
+                    <strong>Habilidades:</strong>
+                    <ul style="padding-left: 20px; margin: 5px 0;">
+                        <?php foreach ($habilidades as $h): ?>
+                            <li style="text-transform: capitalize;"><?php echo $h; ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+
+        <?php
+        endwhile;
+    else:
+        echo "<p>No hay Pokémon en la base de datos.</p>";
+    endif;
+    $conn->close();
+    ?>
 </div>
 
 
