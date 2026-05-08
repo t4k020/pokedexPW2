@@ -1,10 +1,18 @@
 create database pokedex;
 use pokedex;
+
+CREATE TABLE Tipo (
+    idTipo int auto_increment primary key,
+    nombre varchar(15),
+    dirImagen varchar(100),
+    color varchar(8)
+);
+
 create table pokemon(
     id int auto_increment primary key,
     idNoIncremental int,
     dirImagen varchar(100),
-    nombre varchar (40),
+    nombre varchar(40),
     tipo1 varchar(30),
     tipo2 varchar(30),
     descripcion text,
@@ -14,6 +22,16 @@ create table pokemon(
     habilidad4 varchar(50)
    );
 
+INSERT INTO Tipo (nombre, color, dirImagen) VALUES
+('ACERO', '#6FA3B8', 'steel.svg'),('AGUA', '#2F80ED', 'water.svg'),
+('BICHO', '#9AA60F', 'bug.svg'),('DRAGÓN', '#5865E0', 'dragon.svg'),
+('ELECTRICO', '#F2B705', 'electric.svg'),('FANTASMA', '#7A4C8F', 'ghost.svg'),
+('FUEGO', '#F02020', 'fire.svg'),('HADA', '#E26BE2', 'fairy.svg'),
+('HIELO', '#47C7E8', 'ice.svg'),('LUCHA', '#F08000', 'fighting.svg'),
+('NORMAL', '#A0A0A0', 'normal.svg'),('PLANTA', '#3FA129', 'grass.svg'),
+('PSIQUICO', '#E64B7A', 'psychic.svg'),('ROCA', '#B8B07A', 'rock.svg'),
+('SINIESTRO', '#4A3A3A', 'dark.svg'),('TIERRA', '#A86B2D', 'ground.svg'),
+('VENENO', '#8A3FD1', 'poison.svg'),('VOLADOR', '#8CB9E8', 'flying.svg');
 
 
 

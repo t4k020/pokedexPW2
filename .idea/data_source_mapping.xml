@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/crear-pokemon.php" value="f4f598b6-4caa-4d5d-ad48-9c8286b96e44" />
+    <file url="file://$PROJECT_DIR$/index.php" value="f4f598b6-4caa-4d5d-ad48-9c8286b96e44" />
     <file url="file://$PROJECT_DIR$/script.sql" value="f4f598b6-4caa-4d5d-ad48-9c8286b96e44" />
   </component>
 </project>
