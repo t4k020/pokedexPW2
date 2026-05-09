@@ -1,11 +1,6 @@
 <?php
 // 1. Conexión a la base de datos
-$conn = new mysqli("localhost", "root", "", "pokedex");
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
-
+include_once "includes/conexion.php";
 // 2. Obtener el ID de la URL (usando el 'id' incremental de la base de datos)
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 

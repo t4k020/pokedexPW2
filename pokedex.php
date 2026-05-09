@@ -1,22 +1,3 @@
-<?php
-
-
-$conn = new mysqli("localHost", "root", "", "pokedex");
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
-
-// 2. Obtener un Pokémon aleatorio de la base de datos
-// Usamos ORDER BY RAND() para obtener uno al azar y LIMIT 1
-$sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
-$result = $conn->query($sql);
-
-
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -252,12 +233,17 @@ $result = $conn->query($sql);
 </nav>
 
 <form class="nav-search" action="buscar.php" method="GET">
-    <input type="search" name="q" placeholder="Buscar pokimon">
+    <input type="search" name="q" placeholder="Buscar pokemon">
     <button type="submit">Buscar</button>
 </form>
 
 <div class="pokemon-grid">
     <?php
+    include_once "includes/conexion.php";
+    $sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+
+    /** @var mysqli $conn */
+    $result = $conn->query($sql);
     // 3. El Bucle Mágico: Mientras haya filas en la DB, crea una carta
     if ($result->num_rows > 0):
         while($row = $result->fetch_assoc()):
