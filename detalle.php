@@ -20,7 +20,7 @@ if ($result && $result->num_rows > 0) {
 
     // Agrupar tipos y habilidades (quitando los que sean NULL)
     $tipos       = array_filter([$p['tipo1'], $p['tipo2']]);
-    $habilidades = array_filter([$p['habilidad1'], $p['habilidad2'], $p['habilidad3'], $p['habilidad4']]);
+    $habilidades = array_filter([$p['habilidad1'] ?? null, $p['habilidad2']?? null, $p['habilidad3'], $p['habilidad4']?? null]);
 } else {
     die("¡Pokémon no encontrado en la DB!");
 }
