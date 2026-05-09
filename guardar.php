@@ -1,9 +1,6 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "pokedex");
+include_once "includes/conexion.php";
 
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
 $id = intval($_POST["id"] ?? 0);
 $nombre = $_POST["nombre"];
 $numero = $_POST["numero"];

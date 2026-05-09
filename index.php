@@ -1,18 +1,10 @@
 <?php
 session_start();
 
-
-$conn = new mysqli("localHost", "root", "", "pokedex");
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+include_once "includes/conexion.php";
 
 $sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
 $result = $conn->query($sql);
-
-
-
 
 ?>
 
@@ -61,9 +53,9 @@ $result = $conn->query($sql);
 </form>
 
 <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
-    <button class="btn-random" onclick="">
+    <a class="btn-random" href="crear_formulario.php">
         CREAR POKEMON
-    </button>
+    </a>
 <?php endif; ?>
 
 <div class="pokemon-grid">
@@ -86,7 +78,7 @@ $result = $conn->query($sql);
             <div class="card">
                 <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
                     <div class="card-actions">
-                        <a href="editar.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
+                        <a href="editar_formulario.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
                         <a href="borrar.php?id=<?php echo $row['id']; ?>" class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
                     </div>
                 <?php endif; ?>

@@ -1,10 +1,5 @@
 <?php
-// 1. Conexión a la base de datos
-$conn = new mysqli("localhost", "root", "", "pokedex");
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+include_once "includes/conexion.php";
 
 $result_tipos = $conn->query("SELECT * FROM tipo");
 

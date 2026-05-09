@@ -1,6 +1,12 @@
 create database pokedex;
 use pokedex;
 
+CREATE TABLE usuario (
+    id INT PRIMARY KEY ,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255)
+);
+
 CREATE TABLE Tipo (
     idTipo int auto_increment primary key,
     nombre varchar(15),
@@ -20,6 +26,9 @@ create table pokemon(
     habilidad2 varchar(50),
     habilidad3 varchar(50)
    );
+
+insert into usuario (id,username,password)
+values (1,'admin','123');
 
 INSERT INTO Tipo (nombre, color, dirImagen) VALUES
 ('ACERO', '#6FA3B8', 'steel.svg'),('AGUA', '#2F80ED', 'water.svg'),

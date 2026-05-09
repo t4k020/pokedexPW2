@@ -1,9 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "pokedex");
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+include_once "includes/conexion.php";
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 

@@ -61,7 +61,7 @@ if ($result && $result->num_rows > 0) {
                 <?php endforeach; ?>
             </div>
 
-            <a href="pokedex.php" class="btn-volver">← Volver</a>
+            <a href="index.php" class="btn-volver">← Volver</a>
         </div>
     </div>
 
