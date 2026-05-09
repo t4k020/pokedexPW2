@@ -17,82 +17,115 @@ $result = $conn->query("SELECT * FROM tipo");
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Crear Nuevo Pokemon</title>
-</head>
-<body>
-<form action="crear.php" method="POST" class="w3-container w3-padding-24" enctype="multipart/form-data">
-    <h1>Crear Nuevo Pokemon</h1>
-
-    <label>Nombre</label>
-    <input class="w3-input w3-border" type="text" name="nombre" placeholder="Nombre del Pokemon" required>
-
-    <label>Numero</label>
-    <input class="w3-input w3-border" type="text" name="numero" placeholder="Numero" required>
-
-    <label>Imagen</label>
-    <input class="w3-input w3-border" type="file" name="imagen" placeholder="Imagen" required>
-
 
     <style>
-
-        input[type="checkbox"]{
-            display:none;
+        input[type="checkbox"]:checked + label img {
+            transform: scale(1.15);
         }
-
-        label img{
-            width:50px;
-            border:3px solid transparent;
-            border-radius:50px;
-            cursor:pointer;
-            transition:0.2s;
-        }
-
-        /* Cuando está seleccionado */
-        input[type="checkbox"]:checked + label img{
-            border-color:black;
-            transform:scale(1.05);
-        }
-
     </style>
-<div>
-    <?php
-    if ($result->num_rows > 0) :
-        while($row = $result->fetch_assoc()) :
-            $id_tipo = $row["idTipo"];
-            $nombre_tipo = $row["nombre"];
-            $ruta_imagen ="Assets/Tipo/" . $row["dirImagen"];
-            $color = $row["color"];
-    ?>
 
-    <input type="checkbox" id="<?php echo $nombre_tipo; ?>" name="tipos[]" value="<?php echo $nombre_tipo; ?>">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <form action="crear.php" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        <h1 class="mb-4">Crear Nuevo Pokemon</h1>
 
-    <label for="<?php echo $nombre_tipo; ?>">
-        <img
-                src="<?php echo $ruta_imagen; ?>"
-                alt="<?php echo $nombre_tipo; ?>"
-                title="<?php echo $nombre_tipo; ?>"
-                style="background-color: <?php echo $color; ?>"
-        >
-    </label>
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" type="text" name="nombre" placeholder="Nombre del Pokémon" required>
+        </div>
 
-    <?php
-    endwhile;
-    endif;
-    ?>
-</div>
+        <div class="mb-3">
+            <label class="form-label">#Número Identificador</label>
+            <input class="form-control" type="text" name="numero" placeholder="Número" required>
+        </div>
 
-    <label>Descripción</label>
-    <input class="w3-input w3-border" type="text" name="descripcion" placeholder="Descripcion de Pokemon">
+        <div class="mb-4">
+            <label class="form-label">Imagen</label>
+            <input class="form-control" type="file" name="imagen" required>
+        </div>
 
-    <div class="w3-padding-24">
-        <button type="submit" class="w3-button w3-deep-purple w3-block w3-round">
+        <div class="mb-4">
+            <label class="form-label d-block">Tipos
+                <span id="error" class="text-danger ms-2"></span>
+            </label>
+
+
+            <div class="d-flex flex-wrap gap-3 justify-content-center">
+
+                <?php
+                if ($result->num_rows > 0) :
+                    while ($row = $result->fetch_assoc()) :
+
+                        $id_tipo = $row["idTipo"];
+                        $nombre_tipo = $row["nombre"];
+                        $ruta_imagen = "Assets/Tipo/" . $row["dirImagen"];
+                        ?>
+
+                        <div>
+                            <input type="checkbox" class="btn-check" id="<?php echo $nombre_tipo; ?>"
+                                   name="tipos[]" value="<?php echo $nombre_tipo; ?>">
+
+                            <label class="btn btn-outline-dark rounded-circle p-1" for="<?php echo $nombre_tipo; ?>">
+                                <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $nombre_tipo; ?>"
+                                     title="<?php echo $nombre_tipo; ?>" width="40px"></label>
+                        </div>
+
+                    <?php
+                    endwhile;
+                endif;
+                ?>
+
+            </div>
+        </div>
+
+        <div class="mb-4">
+
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" name="descripcion" rows="3" placeholder="Descripción del Pokémon"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
             <b>GUARDAR DATOS</b>
         </button>
-    </div>
+
+</div>
 </form>
 <!--    Datos extras??-->
-
+</div>
 <?php $conn->close(); ?>
 </body>
+<script>
+    const checks = document.querySelectorAll('input[name="tipos[]"]');
+
+    checks.forEach(check => {
+
+        check.addEventListener('change', () => {
+
+            const seleccionados =
+                document.querySelectorAll('input[name="tipos[]"]:checked');
+
+            // Máximo 2
+            if (seleccionados.length > 2) {
+                check.checked = false;
+                error.textContent = "Solo puedes seleccionar máximo 2 tipos";
+            }
+
+            // Required dinámico
+            checks.forEach(c => {
+                c.required = seleccionados.length === 0;
+            });
+
+        });
+
+    });
+
+    // Inicialmente requerido
+    checks.forEach(c => c.required = true);
+</script>
 </html>
