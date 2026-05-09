@@ -6,7 +6,7 @@ if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-$result = $conn->query("SELECT * FROM tipo");
+$result_tipos = $conn->query("SELECT * FROM tipo");
 
 ?>
 
@@ -18,7 +18,7 @@ $result = $conn->query("SELECT * FROM tipo");
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Crear Nuevo Pokemon</title>
+    <title>Crear Pokemon</title>
 
     <style>
         input[type="checkbox"]:checked + label img {
@@ -29,7 +29,7 @@ $result = $conn->query("SELECT * FROM tipo");
 </head>
 <body class="bg-light">
 <div class="container py-5">
-    <form action="crear.php" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
+    <form action="guardar.php" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
         <h1 class="mb-4">Crear Nuevo Pokemon</h1>
 
         <div class="mb-3">
@@ -56,8 +56,8 @@ $result = $conn->query("SELECT * FROM tipo");
             <div class="d-flex flex-wrap gap-3 justify-content-center">
 
                 <?php
-                if ($result->num_rows > 0) :
-                    while ($row = $result->fetch_assoc()) :
+                if ($result_tipos->num_rows > 0) :
+                    while ($row = $result_tipos->fetch_assoc()) :
 
                         $id_tipo = $row["idTipo"];
                         $nombre_tipo = $row["nombre"];
@@ -82,13 +82,17 @@ $result = $conn->query("SELECT * FROM tipo");
         </div>
 
         <div class="mb-4">
-
+            <label class="form-label">Habilidades</label>
+            <input class="form-control" type="text" name="habilidades[]" placeholder="Habilidad 1">
+            <input class="form-control" type="text" name="habilidades[]" placeholder="Habilidad 2">
+            <input class="form-control" type="text" name="habilidades[]" placeholder="Habilidad Oculta">
         </div>
 
         <div class="mb-4">
             <label class="form-label">Descripción</label>
             <textarea class="form-control" name="descripcion" rows="3" placeholder="Descripción del Pokémon"></textarea>
         </div>
+        <!--    Datos extras??-->
 
         <button type="submit" class="btn btn-primary w-100">
             <b>GUARDAR DATOS</b>
@@ -96,7 +100,6 @@ $result = $conn->query("SELECT * FROM tipo");
 
 </div>
 </form>
-<!--    Datos extras??-->
 </div>
 <?php $conn->close(); ?>
 </body>
@@ -116,16 +119,8 @@ $result = $conn->query("SELECT * FROM tipo");
                 error.textContent = "Solo puedes seleccionar máximo 2 tipos";
             }
 
-            // Required dinámico
-            checks.forEach(c => {
-                c.required = seleccionados.length === 0;
-            });
-
         });
 
     });
-
-    // Inicialmente requerido
-    checks.forEach(c => c.required = true);
 </script>
 </html>

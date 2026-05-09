@@ -18,8 +18,7 @@ create table pokemon(
     descripcion text,
     habilidad1 varchar(50),
     habilidad2 varchar(50),
-    habilidad3 varchar(50),
-    habilidad4 varchar(50)
+    habilidad3 varchar(50)
    );
 
 INSERT INTO Tipo (nombre, color, dirImagen) VALUES
@@ -33,27 +32,14 @@ INSERT INTO Tipo (nombre, color, dirImagen) VALUES
 ('SINIESTRO', '#4A3A3A', 'dark.svg'),('TIERRA', '#A86B2D', 'ground.svg'),
 ('VENENO', '#8A3FD1', 'poison.svg'),('VOLADOR', '#8CB9E8', 'flying.svg');
 
-
-
-INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, descripcion, habilidad1, habilidad2, habilidad3, habilidad4) VALUES
-(133, 'eevee.png', 'Eevee', 'Normal', NULL, 'Su estructura genética es irregular y puede mutar por diversas causas, permitiéndole evolucionar.', 'Run Away', 'Adaptability', 'Anticipation', NULL),
-(197, 'umbreon.png', 'Umbreon', 'Dark', NULL, 'Cuando se expone al aura lunar, los anillos de su cuerpo brillan y se llena de una energía misteriosa.', 'Synchronize', 'Inner Focus', NULL, NULL),
-(257, 'blaziken.png', 'Blaziken', 'Fire', 'Fighting', 'En combate, exhala intensas llamas por las muñecas y ataca con una ferocidad increíble.', 'Blaze', 'Speed Boost', NULL, NULL),
-(282, 'gardevoir.png', 'Gardevoir', 'Psychic', 'Fairy', 'Tiene la capacidad de predecir el futuro para proteger a su entrenador con su máximo poder.', 'Synchronize', 'Trace', 'Telepathy', NULL),
-(302, 'sableye.png', 'Sableye', 'Dark', 'Ghost', 'Vive en cuevas profundas. Se alimenta de gemas, por lo que sus ojos se convirtieron en joyas.', 'Keen Eye', 'Stall', 'Prankster', NULL),
-(445, 'garchomp.png', 'Garchomp', 'Dragon', 'Ground', 'Vuela a una velocidad increíble. Sus alas crean cuchillas de aire cuando corre a potencia.', 'Sand Veil', 'Rough Skin', NULL, NULL),
-(635, 'hydreigon.png', 'Hydreigon', 'Dark', 'Dragon', 'Pokémon aterrador con tres cabezas. Solo la cabeza del centro tiene cerebro.', 'Levitate', NULL, NULL, NULL),
-(700, 'sylveon.png', 'Sylveon', 'Fairy', NULL, 'A través de sus cintas sensoriales, emite un aura relajante que detiene cualquier combate.', 'Cute Charm', 'Pixilate', NULL, NULL),
-(745, 'lycanron.png', 'Lycanroc', 'Rock', NULL, 'Su forma depende de la posición del sol o la luna. Es un cazador rápido y feroz.', 'Keen Eye', 'Sand Rush', 'Steadfast', NULL),
-(888, 'zacian.png', 'Zacian', 'Fairy', 'Steel', 'Conocido como el héroe de la leyenda, capaz de cortar cualquier cosa con su espada.', 'Intrepid Sword', NULL, NULL, NULL);
-
-
-CREATE TABLE usuario (
-    id INT PRIMARY KEY ,
-    username VARCHAR(50) UNIQUE,
-    password VARCHAR(255)
-
-);
-
-insert into admin (id,username,password)
-values (1,"admin","123");
+INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, descripcion, habilidad1, habilidad2, habilidad3) VALUES
+(133, 'eevee.png', 'Eevee', 'Normal', NULL, 'Su estructura genética es irregular y puede mutar por diversas causas, permitiéndole evolucionar.', 'Run Away', 'Adaptability', 'Anticipation'),
+(197, 'umbreon.png', 'Umbreon', 'Dark', NULL, 'Cuando se expone al aura lunar, los anillos de su cuerpo brillan y se llena de una energía misteriosa.', 'Synchronize', 'Inner Focus', NULL),
+(257, 'blaziken.png', 'Blaziken', 'Fire', 'Fighting', 'En combate, exhala intensas llamas por las muñecas y ataca con una ferocidad increíble.', 'Blaze', 'Speed Boost', NULL),
+(282, 'gardevoir.png', 'Gardevoir', 'Psychic', 'Fairy', 'Tiene la capacidad de predecir el futuro para proteger a su entrenador con su máximo poder.', 'Synchronize', 'Trace', 'Telepathy'),
+(302, 'sableye.png', 'Sableye', 'Dark', 'Ghost', 'Vive en cuevas profundas. Se alimenta de gemas, por lo que sus ojos se convirtieron en joyas.', 'Keen Eye', 'Stall', 'Prankster'),
+(445, 'garchomp.png', 'Garchomp', 'Dragon', 'Ground', 'Vuela a una velocidad increíble. Sus alas crean cuchillas de aire cuando corre a potencia.', 'Sand Veil', 'Rough Skin', NULL),
+(635, 'hydreigon.png', 'Hydreigon', 'Dark', 'Dragon', 'Pokémon aterrador con tres cabezas. Solo la cabeza del centro tiene cerebro.', 'Levitate', NULL, NULL),
+(700, 'sylveon.png', 'Sylveon', 'Fairy', NULL, 'A través de sus cintas sensoriales, emite un aura relajante que detiene cualquier combate.', 'Cute Charm', 'Pixilate', NULL),
+(745, 'lycanron.png', 'Lycanroc', 'Rock', NULL, 'Su forma depende de la posición del sol o la luna. Es un cazador rápido y feroz.', 'Keen Eye', 'Sand Rush', 'Steadfast'),
+(888, 'zacian.png', 'Zacian', 'Fairy', 'Steel', 'Conocido como el héroe de la leyenda, capaz de cortar cualquier cosa con su espada.', 'Intrepid Sword', NULL, NULL);
