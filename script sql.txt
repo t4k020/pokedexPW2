@@ -15,6 +15,8 @@ create table pokemon(
    );
 
 
+
+
 INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, descripcion, habilidad1, habilidad2, habilidad3, habilidad4) VALUES
 (133, 'eevee.png', 'Eevee', 'Normal', NULL, 'Su estructura genética es irregular y puede mutar por diversas causas, permitiéndole evolucionar.', 'Run Away', 'Adaptability', 'Anticipation', NULL),
 (197, 'umbreon.png', 'Umbreon', 'Dark', NULL, 'Cuando se expone al aura lunar, los anillos de su cuerpo brillan y se llena de una energía misteriosa.', 'Synchronize', 'Inner Focus', NULL, NULL),
@@ -26,3 +28,14 @@ INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, descripci
 (700, 'sylveon.png', 'Sylveon', 'Fairy', NULL, 'A través de sus cintas sensoriales, emite un aura relajante que detiene cualquier combate.', 'Cute Charm', 'Pixilate', NULL, NULL),
 (745, 'lycanron.png', 'Lycanroc', 'Rock', NULL, 'Su forma depende de la posición del sol o la luna. Es un cazador rápido y feroz.', 'Keen Eye', 'Sand Rush', 'Steadfast', NULL),
 (888, 'zacian.png', 'Zacian', 'Fairy', 'Steel', 'Conocido como el héroe de la leyenda, capaz de cortar cualquier cosa con su espada.', 'Intrepid Sword', NULL, NULL, NULL);
+
+
+CREATE TABLE usuario (
+    id INT PRIMARY KEY ,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255)
+
+);
+
+insert into admin (id,username,password)
+values (1,"admin","123");

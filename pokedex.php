@@ -1,3 +1,21 @@
+<?php
+session_start();
+
+
+$conn = new mysqli("localHost", "root", "", "pokedex");
+
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
+}
+
+$sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+$result = $conn->query($sql);
+
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,29 +27,44 @@
 <body>
 
 <nav class="navbar">
-    <!-- Lado Izquierdo: Imagen y Nombre del Logo -->
+
     <div class="nav-logo">
         <img src="https://via.placeholder.com/40" alt="Logo">
         <span class="logo-name">Poke dex</span>
     </div>
 
-    <!-- Centro: Título -->
+
     <div class="nav-title">
         <h1>Gestión de Aldea</h1>
     </div>
 
-    <!-- Lado Derecho: Formulario de Ingreso -->
-    <form class="nav-form">
-        <input type="text" placeholder="Usuario" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Ingresar</button>
-    </form>
+
+    <?php if (isset($_SESSION['nombre'])): ?>
+        <!-- Esto se muestra solo si el usuario YA entró -->
+        <div class="user-info">
+            <span>Bienvenido, <strong><?php echo $_SESSION['nombre']; ?></strong></span>
+            <a href="cerrarSesion.php" class="btn">Cerrar Sesión</a>
+        </div>
+    <?php else: ?>
+        <!-- Esto se muestra solo si NO hay sesión (el formulario original) -->
+        <form action="validarAdmin.php" class="nav-form" method="POST">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="pass" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+    <?php endif; ?>
 </nav>
 
-<form class="nav-search" action="buscar.php" method="GET">
-    <input type="text" name="termino" placeholder="Buscar pokemon">
+<form class="nav-search" action="buscar.php" method="POST">
+    <input type="search" name="q" placeholder="Buscar pokimon">
     <button type="submit">Buscar</button>
 </form>
+
+<?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+    <button class="btn-random" onclick="">
+        CREAR POKEMON
+    </button>
+<?php endif; ?>
 
 <div class="pokemon-grid">
     <?php
@@ -51,10 +84,12 @@
             ?>
 
             <div class="card">
-                <div class="card-actions">
-                    <a href="editar.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
-                    <a href="borrar.php?id=<?php echo $row['id']; ?>" class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
-                </div>
+                <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+                    <div class="card-actions">
+                        <a href="editar.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
+                        <a href="borrar.php?id=<?php echo $row['id']; ?>" class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                    </div>
+                <?php endif; ?>
 
                 <a href="detalle.php?id=<?php echo $row['id']; ?>">
                     <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $row['nombre']; ?>">
@@ -89,9 +124,6 @@
 </div>
 
 
-<button class="btn-random" onclick="">
-    CREAR POKEMON
-</button>
 
 </body>
 </html>
