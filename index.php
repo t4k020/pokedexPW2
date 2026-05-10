@@ -72,7 +72,7 @@ $result = $conn->query($sql);
             // Procesamos los datos de la fila actual
             $ruta_imagen = "assets/" . $row['dirImagen'];
             $tipos = array_filter([$row['tipo1'], $row['tipo2']]); // Crea array y quita nulos
-            $habilidades = array_filter([$row['habilidad1'], $row['habilidad2'], $row['habilidad3'], $row['habilidad4']]);
+            $habilidades = array_filter([$row['habilidad1'] ?? null , $row['habilidad2'] ?? null , $row['habilidad3'] ?? null , $row['habilidad4'] ?? null ]);
             ?>
 
             <div class="card">

@@ -14,7 +14,7 @@ if ($row = $result->fetch_assoc()) {
     if ($pass == $row['password']) {
         $_SESSION['id'] = $row['id'];
         $_SESSION['nombre'] = $user;
-        header("Location: pokedex.php");
+        header("Location: index.php");
         exit();
     }
      else {
