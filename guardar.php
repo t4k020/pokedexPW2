@@ -6,13 +6,21 @@ $nombre = $_POST["nombre"];
 $numero = $_POST["numero"];
 $nombreArchivo = $_POST["imagen_actual"];
 
-if(isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
-        $nombreArchivo = $_FILES["imagen"]["name"];
-        $rutaArchivo = "./Assets/" . $nombreArchivo;
+if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
+    if ($id != 0) {
 
-        move_uploaded_file($_FILES["imagen"]["tmp_name"], $rutaArchivo);
+        $rutaAnterior = "Assets/" . $nombreArchivo;
+
+        if (!empty($nombreArchivo) && file_exists($rutaAnterior)) {
+            unlink($rutaAnterior);
+        }
     }
 
+    $nombreArchivo = $_FILES["imagen"]["name"];
+    $rutaArchivo = "Assets/" . $nombreArchivo;
+
+    move_uploaded_file($_FILES["imagen"]["tmp_name"], $rutaArchivo);
+}
 
 $tipos = $_POST["tipos"];
 $tipo1 = $tipos[0] ?? null;
