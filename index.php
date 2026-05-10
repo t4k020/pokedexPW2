@@ -80,7 +80,8 @@ $result = $conn->query($sql);
                 <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
                     <div class="card-actions">
                         <a href="editar_formulario.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
-                        <a href="borrar.php?id=<?php echo $row['id']; ?>" class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                        <a href="borrar.php?id=<?php echo $row['id']; ?>&img=<?php echo urlencode($row['dirImagen']); ?>"
+                           class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
                     </div>
                 <?php endif; ?>
 

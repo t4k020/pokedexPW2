@@ -1,12 +1,20 @@
 <?php
 include_once "includes/conexion.php";
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$imagen = $_GET["img"] ?? "";
 
-$sql = "DELETE FROM pokemon WHERE id = $id";
-$result = $conn->query($sql);
+if ($id != 0) {
 
-header("Location: index.php");
+    $rutaArchivo = "assets/" . $imagen;
+
+    if (!empty($imagen) && file_exists($rutaArchivo)) {
+        unlink($rutaArchivo);
+    }
+}
+$result = $conn->query("DELETE FROM pokemon WHERE id = $id");
+
 $conn->close();
-
+header("Location: index.php");
+exit;
 ?>
