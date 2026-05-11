@@ -1,5 +1,7 @@
 <?php
 include_once "includes/conexion.php";
+require_once "Classes/pokemones.php";
+require_once "Classes/tipos.php";
 
 $id = intval($_POST["id"] ?? 0);
 $nombre = $_POST["nombre"];
@@ -8,17 +10,13 @@ $nombreArchivo = $_POST["imagen_actual"];
 
 if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
     if ($id != 0) {
-
         $rutaAnterior = "Assets/" . $nombreArchivo;
-
         if (!empty($nombreArchivo) && file_exists($rutaAnterior)) {
             unlink($rutaAnterior);
         }
     }
-
     $nombreArchivo = $_FILES["imagen"]["name"];
     $rutaArchivo = "Assets/" . $nombreArchivo;
-
     move_uploaded_file($_FILES["imagen"]["tmp_name"], $rutaArchivo);
 }
 
@@ -38,6 +36,7 @@ if($id == 0) {
 VALUES ($numero, '$nombreArchivo', '$nombre', '$tipo1', '$tipo2','$habilidad1','$habilidad2','$habilidad3', '$descripcion')";
     $conn->query($sql);
     $id = $conn->insert_id;
+    $pokemones[] += new Pokemon($numero, $nombreArchivo, $nombre, $tipos, $descripcion, $habilidades);
 }
 else {
     $sql = "UPDATE pokemon
@@ -52,6 +51,17 @@ else {
         descripcion = '$descripcion'
         WHERE id = $id;";
     $conn->query($sql);
+
+    foreach ($pokemones as $pokemon) {
+        if ($id == $pokemon->getId()) {
+            $pokemon->setIdNoIncremental($numero);
+            $pokemon->setNombre($nombre);
+            $pokemon->setDirImagen($nombreArchivo);
+            $pokemon->setTipos($tipos);
+            $pokemon->setHabilidades($habilidades);
+            $pokemon->setDescripcion($descripcion);
+        }
+    }
 }
 
 header("Location: detalle.php?id=" . $id);

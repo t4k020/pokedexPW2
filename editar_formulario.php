@@ -1,26 +1,23 @@
 <?php
-include_once "includes/conexion.php";
+require_once "Classes/tipos.php";
+require_once "Classes/pokemones.php";
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-$sql = "SELECT * FROM pokemon WHERE id = $id";
-$result = $conn->query($sql);
+if (!empty($pokemones)) {
+    foreach ($pokemones as $pokemon) {
+        if ($pokemon->getId() == $id) {
+            $nombre = ucfirst($pokemon->getNombre());
+            $id_pokedex = $pokemon->getIdNoIncremental();
+            $imagen = "assets/" . $pokemon->getDirImagen();
+            $tipos = $pokemon->getTipos();
+            $habilidades = $pokemon->getHabilidades();
+            $descripcion = $pokemon->getDescripcion();
+        }
+    }
 
-if ($result && $result->num_rows > 0) {
-    $p = $result->fetch_assoc();
-
-    $nombre = ucfirst($p['nombre']);
-    $id_pokedex = $p['idNoIncremental'];
-    $imagen = "assets/" . $p['dirImagen'];
-    $tipos       = array_filter([$p['tipo1'], $p['tipo2']]);
-    $habilidades = array_filter([$p['habilidad1'], $p['habilidad2'], $p['habilidad3']]);
-    $descripcion = $p['descripcion'];
-
-} else {
+} else
     die("¡Pokémon no encontrado en la DB!");
-}
-
-$result_tipos = $conn->query("SELECT * FROM tipo");
 
 ?>
 
@@ -47,7 +44,7 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
         <h1 class="mb-4">Editar Pokemon Existente</h1>
 
         <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <input type="hidden" name="imagen_actual" value="<?php echo $p['dirImagen']; ?>">
+        <input type="hidden" name="imagen_actual" value="<?php echo $imagen; ?>">
 
         <div class="mb-3">
             <label class="form-label">Nombre</label>
@@ -75,18 +72,15 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
             <div class="d-flex flex-wrap gap-3 justify-content-center">
 
                 <?php
-                if ($result_tipos->num_rows > 0) :
-                    while ($row = $result_tipos->fetch_assoc()) :
-
-                        $id_tipo = $row["idTipo"];
-                        $nombre_tipo = $row["nombre"];
-                        $ruta_imagen = "Assets/Tipo/" . $row["dirImagen"];
+                if (isset($tipos) && !empty($tipos)):
+                    foreach ($tipos as $tipo) :
+                        $nombre_tipo = $tipo->getNombre();
+                        $ruta_imagen = "Assets/Tipo/" . $tipo->getDirImagen();
                         ?>
 
                         <div>
                             <input type="checkbox" class="btn-check" id="<?php echo $nombre_tipo; ?>"
-                                   name="tipos[]" value="<?php echo $nombre_tipo; ?>"
-                                <?php echo in_array($nombre_tipo, $tipos) ? 'checked' : ''; ?>>
+                                   name="tipos[]" value="<?php echo $nombre_tipo; ?>">
 
                             <label class="btn btn-outline-dark rounded-circle p-1" for="<?php echo $nombre_tipo; ?>">
                                 <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $nombre_tipo; ?>"
@@ -94,7 +88,7 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                         </div>
 
                     <?php
-                    endwhile;
+                    endforeach;
                 endif;
                 ?>
 
@@ -125,7 +119,6 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
 </form>
 <!--    Datos extras??-->
 </div>
-<?php $conn->close(); ?>
 </body>
 <script>
     const checks = document.querySelectorAll('input[name="tipos[]"]');

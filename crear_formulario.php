@@ -1,8 +1,5 @@
 <?php
-include_once "includes/conexion.php";
-
-$result_tipos = $conn->query("SELECT * FROM tipo");
-
+require_once "Classes/tipos.php"
 ?>
 
 <!doctype html>
@@ -51,12 +48,10 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
             <div class="d-flex flex-wrap gap-3 justify-content-center">
 
                 <?php
-                if ($result_tipos->num_rows > 0) :
-                    while ($row = $result_tipos->fetch_assoc()) :
-
-                        $id_tipo = $row["idTipo"];
-                        $nombre_tipo = $row["nombre"];
-                        $ruta_imagen = "Assets/Tipo/" . $row["dirImagen"];
+                if (isset($tipos) && !empty($tipos)):
+                    foreach ($tipos as $tipo) :
+                        $nombre_tipo = $tipo->getNombre();
+                        $ruta_imagen = "Assets/Tipo/" . $tipo->getDirImagen();
                         ?>
 
                         <div>
@@ -69,7 +64,7 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                         </div>
 
                     <?php
-                    endwhile;
+                    endforeach;
                 endif;
                 ?>
 
@@ -96,7 +91,6 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
 </div>
 </form>
 </div>
-<?php $conn->close(); ?>
 </body>
 <script>
     const checks = document.querySelectorAll('input[name="tipos[]"]');
