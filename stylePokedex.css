@@ -126,6 +126,12 @@ body {
     width: 100%;
 }
 
+.habilidades{
+    text-align: left;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
 
 .card {
     background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);

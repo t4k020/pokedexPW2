@@ -67,14 +67,24 @@ if (isset($mensajeError)) {
     //si hubo error, $result se sobreescribe y va a traer a todos los pokemones, sino va a traer a los que coincidan con la busqueda
     while ($pokemon = $result->fetch_assoc()) {
         echo "<div class='card'>";
-        echo "<img src='Assets/" . $pokemon['dirImagen'] . "' alt='" . $pokemon['nombre'] . "'>";
-        echo "<h3>" . $pokemon['nombre'] . "</h3>";
+        echo "<a href='detalle.php?id=" . $pokemon['id'] . "'><img src='Assets/" . $pokemon['dirImagen'] . "' alt='" . $pokemon['nombre'] . "'></a>";        echo "<h3>" . $pokemon['nombre'] . "</h3>";
 
-        // Lógica de tipos que armamos antes
         echo "<p class='tipo'>" . $pokemon['tipo1'] . "</p>";
         if (!empty($pokemon['tipo2'])) {
             echo "<p class='tipo'>" . $pokemon['tipo2'] . "</p>";
         }
+        echo "<div class='habilidades'>";
+        echo "<strong>Habilidades:</strong>";
+        echo "<ul>";
+        echo "<li>" . $pokemon['habilidad1'] . "</li>";
+        if (!empty($pokemon['habilidad2'])) {
+            echo "<li>" . $pokemon['habilidad2'] . "</li>";
+        }
+        if (!empty($pokemon['habilidad3'])){
+            echo "<li>" . $pokemon['habilidad3'] . "</li>";
+        }
+        echo "</ul>";
+        echo "</div>";
         echo "</div>";
     }
     ?>

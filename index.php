@@ -48,8 +48,8 @@ $result = $conn->query($sql);
     <?php endif; ?>
 </nav>
 
-<form class="nav-search" action="buscar.php" method="POST">
-    <input type="search" name="q" placeholder="Buscar pokimon">
+<form class="nav-search" action="buscar.php" method="GET">
+    <input type="search" name="termino" placeholder="Buscar pokemon">
     <button type="submit">Buscar</button>
 </form>
 
@@ -98,7 +98,7 @@ $result = $conn->query($sql);
                     <?php endforeach; ?>
                 </div>
 
-                <div style="text-align: left; margin-top: 15px; font-size: 0.9rem;">
+                <div class="habilidades">
                     <strong>Habilidades:</strong>
                     <ul style="padding-left: 20px; margin: 5px 0;">
                         <?php foreach ($habilidades as $h): ?>
