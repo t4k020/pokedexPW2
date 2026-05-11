@@ -1,5 +1,15 @@
 <?php
 include_once "includes/conexion.php";
+session_start();
+
+if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
+
+
+    header("Location: index.php");
+
+
+    exit();
+}
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
@@ -57,7 +67,7 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
 
         <div class="mb-3">
             <label class="form-label">#Número Identificador</label>
-            <input class="form-control" type="text" name="numero"
+            <input class="form-control" type="text" name="numero" pattern="\d+" min="1"
                    placeholder="Número" value="<?php echo $id_pokedex; ?>" required>
         </div>
 
@@ -120,11 +130,11 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
         <button type="submit" class="btn btn-primary w-100">
             <b>GUARDAR DATOS</b>
         </button>
+    </form>
+</div>
 
-</div>
-</form>
 <!--    Datos extras??-->
-</div>
+
 <?php $conn->close(); ?>
 </body>
 <script>

@@ -1,5 +1,6 @@
 <?php
 include_once "includes/conexion.php";
+session_start();
 
 /** @var mysqli $conn */
 
@@ -27,24 +28,28 @@ if ($result->num_rows == 0) {
     <link rel="stylesheet" href="stylePokedex.css">
 </head>
 <body>
+
 <nav class="navbar">
-    <!-- Lado Izquierdo: Imagen y Nombre del Logo -->
+
     <div class="nav-logo">
         <img src="https://via.placeholder.com/40" alt="Logo">
         <span class="logo-name">Poke dex</span>
     </div>
 
-    <!-- Centro: Título -->
-    <div class="nav-title">
-        <h1>Gestión de Aldea</h1>
-    </div>
-
-    <!-- Lado Derecho: Formulario de Ingreso -->
-    <form class="nav-form">
-        <input type="text" placeholder="Usuario" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Ingresar</button>
-    </form>
+    <?php if (isset($_SESSION['nombre'])): ?>
+        <!-- Esto se muestra solo si el usuario YA entró -->
+        <div class="user-info">
+            <span>Bienvenido, <strong><?php echo $_SESSION['nombre']; ?></strong></span>
+            <a href="cerrarSesion.php" class="btn">Cerrar Sesión</a>
+        </div>
+    <?php else: ?>
+        <!-- Esto se muestra solo si NO hay sesión -->
+        <form action="validarAdmin.php" class="nav-form" method="POST">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="pass" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+    <?php endif; ?>
 </nav>
 
 <form class="nav-search" action="buscar.php" method="GET">
@@ -65,29 +70,50 @@ if (isset($mensajeError)) {
 <div class="pokemon-grid">
     <?php
     //si hubo error, $result se sobreescribe y va a traer a todos los pokemones, sino va a traer a los que coincidan con la busqueda
-    while ($pokemon = $result->fetch_assoc()) {
-        echo "<div class='card'>";
-        echo "<a href='detalle.php?id=" . $pokemon['id'] . "'><img src='Assets/" . $pokemon['dirImagen'] . "' alt='" . $pokemon['nombre'] . "'></a>";        echo "<h3>" . $pokemon['nombre'] . "</h3>";
+    while ($row = $result->fetch_assoc()):
+        // Procesamos los datos de la fila actual
+        $ruta_imagen = "assets/" . $row['dirImagen'];
+        $tipos = array_filter([$row['tipo1'], $row['tipo2']]);
+        $habilidades = array_filter([$row['habilidad1'], $row['habilidad2'], $row['habilidad3']]);
+        ?>
 
-        echo "<p class='tipo'>" . $pokemon['tipo1'] . "</p>";
-        if (!empty($pokemon['tipo2'])) {
-            echo "<p class='tipo'>" . $pokemon['tipo2'] . "</p>";
-        }
-        echo "<div class='habilidades'>";
-        echo "<strong>Habilidades:</strong>";
-        echo "<ul>";
-        echo "<li>" . $pokemon['habilidad1'] . "</li>";
-        if (!empty($pokemon['habilidad2'])) {
-            echo "<li>" . $pokemon['habilidad2'] . "</li>";
-        }
-        if (!empty($pokemon['habilidad3'])){
-            echo "<li>" . $pokemon['habilidad3'] . "</li>";
-        }
-        echo "</ul>";
-        echo "</div>";
-        echo "</div>";
-    }
+
+    <div class="card">
+        <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+            <div class="card-actions">
+                <a href="editar_formulario.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
+                <a href="borrar.php?id=<?php echo $row['id']; ?>&img=<?php echo urlencode($row['dirImagen']); ?>"
+                   class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+            </div>
+        <?php endif; ?>
+
+        <a href="detalle.php?id=<?php echo $row['id']; ?>">
+            <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $row['nombre']; ?>">
+        </a>
+
+        <p style="color: #888; margin: 0;">#<?php echo $row['idNoIncremental'] ?? ''; ?></p>
+        <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $row['nombre'] ?? ''; ?></h2>
+
+        <div>
+            <?php foreach ($tipos as $t): ?>
+                <span class="tipo"><?php echo $t; ?></span>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="habilidades">
+            <strong>Habilidades:</strong>
+            <ul style="padding-left: 20px; margin: 5px 0;">
+                <?php foreach ($habilidades as $h): ?>
+                    <li style="text-transform: capitalize;"><?php echo $h; ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+    <?php
+    endwhile;
     ?>
+
+
 </div>
 </body>
 </html>

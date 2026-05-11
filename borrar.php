@@ -1,5 +1,15 @@
 <?php
 include_once "includes/conexion.php";
+session_start();
+
+if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
+
+
+    header("Location: index.php");
+
+
+    exit();
+}
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $imagen = $_GET["img"] ?? "";
