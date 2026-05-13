@@ -1,10 +1,10 @@
 <?php
 include_once "includes/conexion.php";
+require_once "clases/Pokemon.php";
 session_start();
-
 /** @var mysqli $conn */
 
-$busqueda = $conn->real_escape_string($_GET['termino'] ?? '');
+$busqueda = $conn->real_escape_string(isset($_GET['termino']) ? $_GET['termino'] : '');
 //Traigo por metodo Get la busqueda del cliente.
 // El el operador null coalescing (??) para evitar errores si está vacío.
 //real_escape_string: evita que los datos enviados por usuarios rompan la consulta o causen inyecciones SQL.
@@ -69,51 +69,41 @@ if (isset($mensajeError)) {
 
 <div class="pokemon-grid">
     <?php
-    //si hubo error, $result se sobreescribe y va a traer a todos los pokemones, sino va a traer a los que coincidan con la busqueda
     while ($row = $result->fetch_assoc()):
-        // Procesamos los datos de la fila actual
-        $ruta_imagen = "assets/" . $row['dirImagen'];
-        $tipos = array_filter([$row['tipo1'], $row['tipo2']]);
-        $habilidades = array_filter([$row['habilidad1'], $row['habilidad2'], $row['habilidad3']]);
+        // Instanciamos la clase con la fila de la base de datos
+        $p = new Pokemon($row);
         ?>
 
+        <div class="card">
+            <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+                <div class="card-actions">
+                    <a href="editar_formulario.php?id=<?php echo $p->id; ?>" class="btn-action edit">✎</a>
+                    <a href="borrar.php?id=<?php echo $p->id; ?>&img=<?php echo urlencode($p->dirImagen); ?>"
+                       class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                </div>
+            <?php endif; ?>
 
-    <div class="card">
-        <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
-            <div class="card-actions">
-                <a href="editar_formulario.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
-                <a href="borrar.php?id=<?php echo $row['id']; ?>&img=<?php echo urlencode($row['dirImagen']); ?>"
-                   class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+            <a href="detalle.php?id=<?php echo $p->id; ?>">
+                <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">
+            </a>
+
+            <p style="color: #888; margin: 0;">#<?php echo $p->idNoIncremental; ?></p>
+            <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $p->nombre; ?></h2>
+
+            <div>
+                <?php $p->imprimirTipos(); // Usamos el método de la clase ?>
             </div>
-        <?php endif; ?>
 
-        <a href="detalle.php?id=<?php echo $row['id']; ?>">
-            <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $row['nombre']; ?>">
-        </a>
-
-        <p style="color: #888; margin: 0;">#<?php echo $row['idNoIncremental'] ?? ''; ?></p>
-        <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $row['nombre'] ?? ''; ?></h2>
-
-        <div>
-            <?php foreach ($tipos as $t): ?>
-                <span class="tipo"><?php echo $t; ?></span>
-            <?php endforeach; ?>
+            <div class="habilidades">
+                <strong>Habilidades:</strong>
+                <ul style="padding-left: 20px; margin: 5px 0;">
+                    <?php foreach ($p->habilidades as $h): ?>
+                        <li style="text-transform: capitalize;"><?php echo $h; ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
         </div>
-
-        <div class="habilidades">
-            <strong>Habilidades:</strong>
-            <ul style="padding-left: 20px; margin: 5px 0;">
-                <?php foreach ($habilidades as $h): ?>
-                    <li style="text-transform: capitalize;"><?php echo $h; ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    </div>
-    <?php
-    endwhile;
-    ?>
-
-
+    <?php endwhile; ?>
 </div>
 </body>
 </html>

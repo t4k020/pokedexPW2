@@ -1,5 +1,6 @@
 <?php
 include_once "includes/conexion.php";
+/** @var mysqli $conn */
 session_start();
 
 if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {

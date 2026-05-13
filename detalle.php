@@ -1,4 +1,5 @@
 <?php
+require_once "clases/Pokemon.php";
 // 1. Conexión a la base de datos
 include_once "includes/conexion.php";
 // 2. Obtener el ID de la URL (usando el 'id' incremental de la base de datos)
@@ -10,17 +11,11 @@ $sql = "SELECT * FROM pokemon WHERE id = $id";
 $result = $conn->query($sql);
 
 if ($result && $result->num_rows > 0) {
-    $p = $result->fetch_assoc();
+    $fila = $result->fetch_assoc();
 
-    // Mapear datos
-    $nombre      = ucfirst($p['nombre']);
-    $id_pokedex  = $p['idNoIncremental'];
-    $imagen      = "assets/" . $p['dirImagen'];
-    $descripcion = $p['descripcion'];
-
-    // Agrupar tipos y habilidades (quitando los que sean NULL)
-    $tipos       = array_filter([$p['tipo1'], $p['tipo2']]);
-    $habilidades = array_filter([$p['habilidad1'] ?? null, $p['habilidad2']?? null, $p['habilidad3'], $p['habilidad4']?? null]);
+    // CREAMOS EL OBJETO (Él hace todo el mapeo solo)
+    $p = new Pokemon($fila);
+    $descripcion = isset($fila['descripcion']) ? $fila['descripcion'] : "Sin descripción disponible.";
 } else {
     die("¡Pokémon no encontrado en la DB!");
 }
@@ -30,24 +25,24 @@ if ($result && $result->num_rows > 0) {
     <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Detalle de <?php echo $nombre; ?></title>
+        <title>Detalle de <?php echo $p->nombre; ?></title>
         <link rel="stylesheet" href="styleDetalle.css">
     </head>
     <body>
 
     <div class="detalle-container">
         <div class="img-container">
-            <img src="<?php echo $imagen; ?>" alt="<?php echo $nombre; ?>">
-            <div class="pokedex-number">#<?php echo $id_pokedex; ?></div>
+            <!-- Usamos las propiedades del objeto -->
+            <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">
+            <div class="pokedex-number">#<?php echo $p->idNoIncremental; ?></div>
         </div>
 
         <div class="info-container">
-            <h1><?php echo $nombre; ?></h1>
+            <h1 style="text-transform: capitalize;"><?php echo $p->nombre; ?></h1>
 
             <div class="types">
-                <?php foreach ($tipos as $t): ?>
-                    <span class="tipo-badge"><?php echo $t; ?></span>
-                <?php endforeach; ?>
+                <!-- Usamos el método que creamos para los tipos -->
+                <?php $p->imprimirTipos(); ?>
             </div>
 
             <div class="desc-box">
@@ -56,8 +51,11 @@ if ($result && $result->num_rows > 0) {
 
             <h3>Habilidades de combate</h3>
             <div class="skills-grid">
-                <?php foreach ($habilidades as $h): ?>
-                    <div class="skill-item"><?php echo $h; ?></div>
+                <!-- El objeto ya tiene las habilidades filtradas -->
+                <?php foreach ($p->habilidades as $h): ?>
+                    <div class="skill-item" style="text-transform: capitalize;">
+                        <?php echo $h; ?>
+                    </div>
                 <?php endforeach; ?>
             </div>
 
@@ -66,5 +64,5 @@ if ($result && $result->num_rows > 0) {
     </div>
 
     </body>
-    </html>
+</html>
 <?php $conn->close(); ?>

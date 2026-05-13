@@ -1,6 +1,6 @@
 <?php
 include_once "includes/conexion.php";
-
+/** @var mysqli $conn */ // Esto le avisa al IDE que la variable viene del include
 session_start();
 
 if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {

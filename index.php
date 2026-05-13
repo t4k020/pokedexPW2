@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once "clases/Pokemon.php";
 include_once "includes/conexion.php";
 $conn = new mysqli("localhost", "root", "", "pokedex");
 
@@ -55,60 +55,45 @@ $result = $conn->query($sql);
 
 <div class="pokemon-grid">
     <?php
-        include_once "includes/conexion.php";
-        $sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+    if ($result->num_rows > 0):
+        while ($row = $result->fetch_assoc()):
+            // CREAMOS EL OBJETO
+            $p = new Pokemon($row);
+            ?>
 
-        /** @var mysqli $conn */
+            <div class="card">
+                <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+                    <div class="card-actions">
+                        <a href="editar_formulario.php?id=<?php echo $p->id; ?>" class="btn-action edit">✎</a>
+                        <!-- Accedemos a la propiedad del objeto -->
+                        <a href="borrar.php?id=<?php echo $p->id; ?>&img=<?php echo urlencode($p->dirImagen); ?>"
+                           class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                    </div>
+                <?php endif; ?>
 
-        // 3. El Bucle Mágico: Mientras haya filas en la DB, crea una carta
-        if ($result->num_rows > 0):
-            while($row = $result->fetch_assoc()):
-            // Procesamos los datos de la fila actual
-            $ruta_imagen = "assets/" . $row['dirImagen'];
-            $tipos = array_filter([$row['tipo1'], $row['tipo2']]); // Crea array y quita nulos
-            $habilidades = array_filter([$row['habilidad1'] , $row['habilidad2']  , $row['habilidad3']] );
-    ?>
+                <a href="detalle.php?id=<?php echo $p->id; ?>">
+                    <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">
+                </a>
 
-    <div class="card">
-        <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
-            <div class="card-actions">
-                <a href="editar_formulario.php?id=<?php echo $row['id']; ?>" class="btn-action edit">✎</a>
-                <a href="borrar.php?id=<?php echo $row['id']; ?>&img=<?php echo urlencode($row['dirImagen']); ?>"
-                   class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
+                <p style="color: #888; margin: 0;">#<?php echo $p->idNoIncremental; ?></p>
+                <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $p->nombre; ?></h2>
+
+                <div>
+                    <?php $p->imprimirTipos(); // USAMOS EL MÉTODO DE LA CLASE
+                    ?>
+                </div>
+
+                <div class="habilidades">
+                    <strong>Habilidades:</strong>
+                    <ul style="padding-left: 20px; margin: 5px 0;">
+                        <?php foreach ($p->habilidades as $h): ?>
+                            <li style="text-transform: capitalize;"><?php echo $h; ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
             </div>
-        <?php endif; ?>
-
-        <a href="detalle.php?id=<?php echo $row['id']; ?>">
-            <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $row['nombre']; ?>">
-        </a>
-
-        <p style="color: #888; margin: 0;">#<?php echo $row['idNoIncremental']; ?></p>
-        <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $row['nombre']; ?></h2>
-
-        <div>
-            <?php foreach ($tipos as $t): ?>
-                <span class="tipo"><?php echo $t; ?></span>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="habilidades">
-            <strong>Habilidades:</strong>
-            <ul style="padding-left: 20px; margin: 5px 0;">
-                <?php foreach ($habilidades as $h): ?>
-                    <li style="text-transform: capitalize;"><?php echo $h; ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    </div>
-    <?php
-        endwhile;
-    else:
-        echo "<p>No hay Pokémon en la base de datos.</p>";
-    endif;
-    $conn->close();
-    ?>
+        <?php endwhile; endif; ?>
 </div>
-
 
 
 </body>
