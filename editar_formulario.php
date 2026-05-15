@@ -1,23 +1,41 @@
 <?php
-require_once "Classes/tipos.php";
-require_once "Classes/pokemones.php";
+include_once "includes/conexion.php";
+/** @var mysqli $conn */
+session_start();
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
 
-if (!empty($pokemones)) {
-    foreach ($pokemones as $pokemon) {
-        if ($pokemon->getId() == $id) {
-            $nombre = ucfirst($pokemon->getNombre());
-            $id_pokedex = $pokemon->getIdNoIncremental();
-            $imagen = "assets/" . $pokemon->getDirImagen();
-            $tipos = $pokemon->getTipos();
-            $habilidades = $pokemon->getHabilidades();
-            $descripcion = $pokemon->getDescripcion();
-        }
-    }
 
-} else
+    header("Location: index.php");
+
+
+    exit();
+}
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+WHERE P.id = $id";
+$result = $conn->query($sql);
+
+if ($result && $result->num_rows > 0) {
+    $p = $result->fetch_assoc();
+
+    $nombre = ucfirst($p['nombre']);
+    $id_pokedex = $p['idNoIncremental'];
+    $imagen = "assets/" . $p['dirImagen'];
+    $tipos       = explode(",", $p['tipos']) ?? [];
+    $habilidades = array_filter([$p['habilidad1'], $p['habilidad2'], $p['habilidad3']]);
+    $descripcion = $p['descripcion'];
+
+} else {
     die("¡Pokémon no encontrado en la DB!");
+}
+
+$result_tipos = $conn->query("SELECT * FROM tipo");
 
 ?>
 
@@ -44,7 +62,7 @@ if (!empty($pokemones)) {
         <h1 class="mb-4">Editar Pokemon Existente</h1>
 
         <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <input type="hidden" name="imagen_actual" value="<?php echo $imagen; ?>">
+        <input type="hidden" name="imagen_actual" value="<?php echo $p['dirImagen']; ?>">
 
         <div class="mb-3">
             <label class="form-label">Nombre</label>
@@ -54,7 +72,7 @@ if (!empty($pokemones)) {
 
         <div class="mb-3">
             <label class="form-label">#Número Identificador</label>
-            <input class="form-control" type="text" name="numero"
+            <input class="form-control" type="text" name="numero" pattern="\d+" min="1"
                    placeholder="Número" value="<?php echo $id_pokedex; ?>" required>
         </div>
 
@@ -72,15 +90,18 @@ if (!empty($pokemones)) {
             <div class="d-flex flex-wrap gap-3 justify-content-center">
 
                 <?php
-                if (isset($tipos) && !empty($tipos)):
-                    foreach ($tipos as $tipo) :
-                        $nombre_tipo = $tipo->getNombre();
-                        $ruta_imagen = "Assets/Tipo/" . $tipo->getDirImagen();
+                if ($result_tipos->num_rows > 0) :
+                    while ($row = $result_tipos->fetch_assoc()) :
+
+                        $id_tipo = $row["idTipo"];
+                        $nombre_tipo = $row["nombre"];
+                        $ruta_imagen = "Assets/Tipo/" . $row["dirImagen"];
                         ?>
 
                         <div>
                             <input type="checkbox" class="btn-check" id="<?php echo $nombre_tipo; ?>"
-                                   name="tipos[]" value="<?php echo $nombre_tipo; ?>">
+                                   name="tipos[]" value="<?php echo $nombre_tipo; ?>"
+                                <?php echo in_array($nombre_tipo, $tipos) ? 'checked' : ''; ?>>
 
                             <label class="btn btn-outline-dark rounded-circle p-1" for="<?php echo $nombre_tipo; ?>">
                                 <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo $nombre_tipo; ?>"
@@ -88,7 +109,7 @@ if (!empty($pokemones)) {
                         </div>
 
                     <?php
-                    endforeach;
+                    endwhile;
                 endif;
                 ?>
 
@@ -114,11 +135,12 @@ if (!empty($pokemones)) {
         <button type="submit" class="btn btn-primary w-100">
             <b>GUARDAR DATOS</b>
         </button>
+    </form>
+</div>
 
-</div>
-</form>
 <!--    Datos extras??-->
-</div>
+
+<?php $conn->close(); ?>
 </body>
 <script>
     const checks = document.querySelectorAll('input[name="tipos[]"]');

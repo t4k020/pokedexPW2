@@ -1,66 +1,63 @@
 <?php
 include_once "includes/conexion.php";
-require_once "Classes/pokemones.php";
-require_once "Classes/tipos.php";
+/** @var mysqli $conn */
 
-$id = intval($_POST["id"] ?? 0);
+$id = intval(isset($_POST["id"]) ? $_POST["id"] : 0);
 $nombre = $_POST["nombre"];
 $numero = $_POST["numero"];
-$nombreArchivo = $_POST["imagen_actual"];
+$nombreArchivo = $_POST["imagen_actual"] ?? "";
 
 if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
     if ($id != 0) {
-        $rutaAnterior = "Assets/" . $nombreArchivo;
+
+        $rutaAnterior = "assets/" . $nombreArchivo;
+
         if (!empty($nombreArchivo) && file_exists($rutaAnterior)) {
             unlink($rutaAnterior);
         }
     }
+
     $nombreArchivo = $_FILES["imagen"]["name"];
-    $rutaArchivo = "Assets/" . $nombreArchivo;
+    $rutaArchivo = "assets/" . $nombreArchivo;
+
     move_uploaded_file($_FILES["imagen"]["tmp_name"], $rutaArchivo);
 }
 
 $tipos = $_POST["tipos"];
-$tipo1 = $tipos[0] ?? null;
-$tipo2 = $tipos[1] ?? null;
 
 $habilidades = $_POST["habilidades"];
-$habilidad1 = $habilidades[0] ?? null;
-$habilidad2 = $habilidades[1] ?? null;
-$habilidad3 = $habilidades[2] ?? null;
+$habilidad1 = isset($habilidades[0]) ? $habilidades[0] : null;
+$habilidad2 = isset($habilidades[1]) ? $habilidades[1] : null;
+$habilidad3 = isset($habilidades[2]) ? $habilidades[2] : null;
 
 $descripcion = $_POST["descripcion"];
 
 if($id == 0) {
-    $sql = "INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, habilidad1, habilidad2, habilidad3, descripcion) 
-VALUES ($numero, '$nombreArchivo', '$nombre', '$tipo1', '$tipo2','$habilidad1','$habilidad2','$habilidad3', '$descripcion')";
+    $sql = "INSERT INTO Pokemon (idNoIncremental, dirImagen, nombre, habilidad1, habilidad2, habilidad3, descripcion) 
+VALUES ($numero, '$nombreArchivo', '$nombre','$habilidad1','$habilidad2','$habilidad3', '$descripcion')";
     $conn->query($sql);
     $id = $conn->insert_id;
-    $pokemones[] += new Pokemon($numero, $nombreArchivo, $nombre, $tipos, $descripcion, $habilidades);
 }
 else {
-    $sql = "UPDATE pokemon
+    $sql = "UPDATE Pokemon
     SET idNoIncremental = $numero,
         nombre = '$nombre',
         dirImagen = '$nombreArchivo',
-        tipo1 = '$tipo1',
-        tipo2 = '$tipo2',
         habilidad1 = '$habilidad1',
         habilidad2 = '$habilidad2',
         habilidad3 = '$habilidad3',
         descripcion = '$descripcion'
-        WHERE id = $id;";
+        WHERE id = $id";
     $conn->query($sql);
+    $conn->query("DELETE FROM Pokemon_tipo WHERE pokemonId = $id");
+}
 
-    foreach ($pokemones as $pokemon) {
-        if ($id == $pokemon->getId()) {
-            $pokemon->setIdNoIncremental($numero);
-            $pokemon->setNombre($nombre);
-            $pokemon->setDirImagen($nombreArchivo);
-            $pokemon->setTipos($tipos);
-            $pokemon->setHabilidades($habilidades);
-            $pokemon->setDescripcion($descripcion);
-        }
+foreach ($tipos as $tipo) {
+    $resultado = $conn->query("SELECT idTipo FROM Tipo WHERE nombre = '$tipo'");
+
+    if ($row = $resultado->fetch_assoc()) {
+        $idTipo = $row["idTipo"];
+        $conn->query("INSERT INTO Pokemon_tipo(pokemonId, tipoId) VALUES ($id, $idTipo)");
     }
 }
 

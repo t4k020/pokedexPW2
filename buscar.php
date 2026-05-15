@@ -1,20 +1,30 @@
 <?php
 include_once "includes/conexion.php";
-
+require_once "clases/Pokemon.php";
+session_start();
 /** @var mysqli $conn */
 
-$busqueda = $conn->real_escape_string($_GET['termino'] ?? '');
+$busqueda = $conn->real_escape_string(isset($_GET['termino']) ? $_GET['termino'] : '');
 //Traigo por metodo Get la busqueda del cliente.
 // El el operador null coalescing (??) para evitar errores si está vacío.
 //real_escape_string: evita que los datos enviados por usuarios rompan la consulta o causen inyecciones SQL.
 
-$sql = "SELECT * FROM pokemon WHERE nombre LIKE '%$busqueda%'";
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+    FROM pokemon P
+    LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+    LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+    WHERE P.nombre LIKE '%$busqueda%'";
 $result = $conn->query($sql);
 
 //Lógica para cuando no se encuentran resultados y tengo que devolver el mensaje de error + todos los pokemones
 if ($result->num_rows == 0) {
     $mensajeError = "Pokemon no encontrado";
-    $sqlTodos = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+    $sqlTodos = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+    FROM pokemon P
+    LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+    LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+    GROUP BY P.idNoIncremental
+    ORDER BY P.idNoIncremental ASC";
     $result = $conn->query($sqlTodos);
 }
 ?>
@@ -27,24 +37,28 @@ if ($result->num_rows == 0) {
     <link rel="stylesheet" href="stylePokedex.css">
 </head>
 <body>
+
 <nav class="navbar">
-    <!-- Lado Izquierdo: Imagen y Nombre del Logo -->
+
     <div class="nav-logo">
         <img src="https://via.placeholder.com/40" alt="Logo">
         <span class="logo-name">Poke dex</span>
     </div>
 
-    <!-- Centro: Título -->
-    <div class="nav-title">
-        <h1>Gestión de Aldea</h1>
-    </div>
-
-    <!-- Lado Derecho: Formulario de Ingreso -->
-    <form class="nav-form">
-        <input type="text" placeholder="Usuario" required>
-        <input type="password" placeholder="Contraseña" required>
-        <button type="submit">Ingresar</button>
-    </form>
+    <?php if (isset($_SESSION['nombre'])): ?>
+        <!-- Esto se muestra solo si el usuario YA entró -->
+        <div class="user-info">
+            <span>Bienvenido, <strong><?php echo $_SESSION['nombre']; ?></strong></span>
+            <a href="cerrarSesion.php" class="btn">Cerrar Sesión</a>
+        </div>
+    <?php else: ?>
+        <!-- Esto se muestra solo si NO hay sesión -->
+        <form action="validarAdmin.php" class="nav-form" method="POST">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="pass" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+    <?php endif; ?>
 </nav>
 
 <form class="nav-search" action="buscar.php" method="GET">
@@ -64,20 +78,34 @@ if (isset($mensajeError)) {
 
 <div class="pokemon-grid">
     <?php
-    //si hubo error, $result se sobreescribe y va a traer a todos los pokemones, sino va a traer a los que coincidan con la busqueda
-    while ($pokemon = $result->fetch_assoc()) {
-        echo "<div class='card'>";
-        echo "<img src='Assets/" . $pokemon['dirImagen'] . "' alt='" . $pokemon['nombre'] . "'>";
-        echo "<h3>" . $pokemon['nombre'] . "</h3>";
+    while ($row = $result->fetch_assoc()):
+        // Instanciamos la clase con la fila de la base de datos
+        $p = new Pokemon($row);
+        ?>
 
-        // Lógica de tipos que armamos antes
-        echo "<p class='tipo'>" . $pokemon['tipo1'] . "</p>";
-        if (!empty($pokemon['tipo2'])) {
-            echo "<p class='tipo'>" . $pokemon['tipo2'] . "</p>";
-        }
-        echo "</div>";
-    }
-    ?>
+        <div class="card">
+
+            <a href="detalle.php?id=<?php echo $p->id; ?>">
+                <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">
+            </a>
+
+            <p style="color: #888; margin: 0;">#<?php echo $p->idNoIncremental; ?></p>
+            <h2 style="text-transform: capitalize; margin: 10px 0;"><?php echo $p->nombre; ?></h2>
+
+            <div>
+                <?php $p->imprimirTipos(); // Usamos el método de la clase ?>
+            </div>
+
+            <div class="habilidades">
+                <strong>Habilidades:</strong>
+                <ul style="padding-left: 20px; margin: 5px 0;">
+                    <?php foreach ($p->habilidades as $h): ?>
+                        <li style="text-transform: capitalize;"><?php echo $h; ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    <?php endwhile; ?>
 </div>
 </body>
 </html>

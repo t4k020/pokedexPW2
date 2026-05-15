@@ -126,6 +126,12 @@ body {
     width: 100%;
 }
 
+.habilidades{
+    text-align: left;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
 
 .card {
     background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
@@ -140,53 +146,19 @@ body {
     max-width: 1200px;
     margin: 0 auto;
 }
-.card-actions {
-    position: relative;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 8px;
-    z-index: 10;
-}
-
-/* Estilo base para los botones redondos */
-.btn-action {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1rem;
-    transition: transform 0.2s, background 0.2s;
-    color: white;
-}
-
-.btn-action:hover {
-    transform: scale(1.1);
-}
-
-/* Colores específicos */
-.edit {
-    background-color: #3498db; /* Azul */
-}
-
-.delete {
-    background-color: #e74c3c; /* Rojo */
-}
-
-.edit:hover { background-color: #2980b9; }
-.delete:hover { background-color: #c0392b; }
 
 img { width: 200px; height: 200px; filter: drop-shadow(0 5px 5px #ccc); }
 
 h1 { text-transform: capitalize; margin: 10px 0; color: #333; }
 
-.tipo {
-    background: #78c850; color: white; padding: 5px 15px; border-radius: 50px;
-    font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 2px; display: inline-block;
+.tipo{
+    width:40px;
+    height:40px;
+    margin-right:10px;
+}
+
+.tipo:last-child{
+    margin-right:0;
 }
 
 ul { text-align: left; padding-left: 20px; color: #555; }

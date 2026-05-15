@@ -1,5 +1,19 @@
 <?php
-require_once "Classes/tipos.php"
+include_once "includes/conexion.php";
+/** @var mysqli $conn */ // Esto le avisa al IDE que la variable viene del include
+session_start();
+
+if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
+
+
+    header("Location: index.php");
+
+
+    exit();
+}
+
+$result_tipos = $conn->query("SELECT * FROM tipo");
+
 ?>
 
 <!doctype html>
@@ -31,7 +45,8 @@ require_once "Classes/tipos.php"
 
         <div class="mb-3">
             <label class="form-label">#Número Identificador</label>
-            <input class="form-control" type="text" name="numero" placeholder="Número" required>
+            <input class="form-control" type="text" name="numero" placeholder="Número"
+                   pattern="\d+" min="1" required>
         </div>
 
         <div class="mb-4">
@@ -48,10 +63,12 @@ require_once "Classes/tipos.php"
             <div class="d-flex flex-wrap gap-3 justify-content-center">
 
                 <?php
-                if (isset($tipos) && !empty($tipos)):
-                    foreach ($tipos as $tipo) :
-                        $nombre_tipo = $tipo->getNombre();
-                        $ruta_imagen = "Assets/Tipo/" . $tipo->getDirImagen();
+                if ($result_tipos->num_rows > 0) :
+                    while ($row = $result_tipos->fetch_assoc()) :
+
+                        $id_tipo = $row["idTipo"];
+                        $nombre_tipo = $row["nombre"];
+                        $ruta_imagen = "Assets/Tipo/" . $row["dirImagen"];
                         ?>
 
                         <div>
@@ -64,7 +81,7 @@ require_once "Classes/tipos.php"
                         </div>
 
                     <?php
-                    endforeach;
+                    endwhile;
                 endif;
                 ?>
 
@@ -87,10 +104,12 @@ require_once "Classes/tipos.php"
         <button type="submit" class="btn btn-primary w-100">
             <b>GUARDAR DATOS</b>
         </button>
+    </form>
 
 </div>
-</form>
-</div>
+
+
+<?php $conn->close(); ?>
 </body>
 <script>
     const checks = document.querySelectorAll('input[name="tipos[]"]');
