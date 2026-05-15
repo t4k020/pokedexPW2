@@ -4,7 +4,12 @@ require_once "clases/Pokemon.php";
 include_once "includes/conexion.php";
 $conn = new mysqli("localhost", "root", "", "pokedex");
 
-$sql = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+GROUP BY P.idNoIncremental
+ORDER BY P.idNoIncremental ASC";
 $result = $conn->query($sql);
 
 ?>
@@ -62,14 +67,6 @@ $result = $conn->query($sql);
             ?>
 
             <div class="card">
-                <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
-                    <div class="card-actions">
-                        <a href="editar_formulario.php?id=<?php echo $p->id; ?>" class="btn-action edit">✎</a>
-                        <!-- Accedemos a la propiedad del objeto -->
-                        <a href="borrar.php?id=<?php echo $p->id; ?>&img=<?php echo urlencode($p->dirImagen); ?>"
-                           class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
-                    </div>
-                <?php endif; ?>
 
                 <a href="detalle.php?id=<?php echo $p->id; ?>">
                     <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">

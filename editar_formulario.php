@@ -14,7 +14,11 @@ if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
-$sql = "SELECT * FROM pokemon WHERE id = $id";
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+WHERE P.id = $id";
 $result = $conn->query($sql);
 
 if ($result && $result->num_rows > 0) {
@@ -23,7 +27,7 @@ if ($result && $result->num_rows > 0) {
     $nombre = ucfirst($p['nombre']);
     $id_pokedex = $p['idNoIncremental'];
     $imagen = "assets/" . $p['dirImagen'];
-    $tipos       = array_filter([$p['tipo1'], $p['tipo2']]);
+    $tipos       = explode(",", $p['tipos']) ?? [];
     $habilidades = array_filter([$p['habilidad1'], $p['habilidad2'], $p['habilidad3']]);
     $descripcion = $p['descripcion'];
 

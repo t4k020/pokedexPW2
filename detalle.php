@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "clases/Pokemon.php";
 // 1. Conexión a la base de datos
 include_once "includes/conexion.php";
@@ -6,7 +7,12 @@ include_once "includes/conexion.php";
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
 // 3. Consultar los datos del Pokémon en la DB local
-$sql = "SELECT * FROM pokemon WHERE id = $id";
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+WHERE P.id = $id";
+
 /** @var mysqli $conn */
 $result = $conn->query($sql);
 
@@ -27,11 +33,24 @@ if ($result && $result->num_rows > 0) {
         <meta charset="UTF-8">
         <title>Detalle de <?php echo $p->nombre; ?></title>
         <link rel="stylesheet" href="styleDetalle.css">
-    </head>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">    </head>
     <body>
 
     <div class="detalle-container">
         <div class="img-container">
+            <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
+                <div class="card-actions">
+                    <a href="editar_formulario.php?id=<?php echo $p->id; ?>" class="btn-action edit">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <!-- Accedemos a la propiedad del objeto -->
+                    <a href="borrar.php?id=<?php echo $p->id; ?>&img=<?php echo urlencode($p->dirImagen); ?>"
+                       class="btn-action delete" onclick="return confirm('¿Borrar?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
             <!-- Usamos las propiedades del objeto -->
             <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">
             <div class="pokedex-number">#<?php echo $p->idNoIncremental; ?></div>
