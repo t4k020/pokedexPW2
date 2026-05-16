@@ -13,18 +13,19 @@ $sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
     FROM pokemon P
     LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
     LEFT JOIN Tipo T ON T.idTipo = R.tipoId
-    WHERE P.nombre LIKE '%$busqueda%'";
+    WHERE P.nombre LIKE '%$busqueda%'
+    GROUP BY P.idNoIncremental";
 $result = $conn->query($sql);
 
 //Lógica para cuando no se encuentran resultados y tengo que devolver el mensaje de error + todos los pokemones
 if ($result->num_rows == 0) {
     $mensajeError = "Pokemon no encontrado";
     $sqlTodos = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
-    FROM pokemon P
-    LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
-    LEFT JOIN Tipo T ON T.idTipo = R.tipoId
-    GROUP BY P.idNoIncremental
-    ORDER BY P.idNoIncremental ASC";
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+GROUP BY P.idNoIncremental
+ORDER BY P.idNoIncremental ASC";
     $result = $conn->query($sqlTodos);
 }
 ?>
