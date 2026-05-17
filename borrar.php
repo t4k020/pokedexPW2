@@ -1,14 +1,10 @@
 <?php
 include_once "includes/conexion.php";
-/** @var mysqli $conn */ // Esto le avisa al IDE que la variable viene del include
+/** @var mysqli $conn */
 session_start();
 
 if (!isset($_SESSION['nombre']) || $_SESSION['nombre'] !== 'admin') {
-
-
     header("Location: index.php");
-
-
     exit();
 }
 
@@ -18,7 +14,11 @@ $imagen = isset($_GET["img"]) ? $_GET["img"] : "";
 if ($id > 0) {
     $conn->query("DELETE FROM pokemon_tipo WHERE pokemonId = $id");
 
-    $rutaArchivo = $imagen;
+    $rutaArchivo = "assets/" . $imagen;
+
+    if (strpos($imagen, 'assets/') !== false) {
+        $rutaArchivo = $imagen;
+    }
 
     if (!empty($imagen) && file_exists($rutaArchivo)) {
         unlink($rutaArchivo);
@@ -30,4 +30,5 @@ if ($id > 0) {
 
 $conn->close();
 header("Location: index.php");
-exit;
+exit();
+?>

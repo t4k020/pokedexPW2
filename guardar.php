@@ -61,8 +61,7 @@ foreach ($tipos as $tipo) {
     }
 }
 
-header("Location: detalle.php?id=" . $id);
-echo $id;
 $conn->close();
-
+header("Location: detalle.php?id=" . $id);
+exit();
 ?>
