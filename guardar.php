@@ -5,7 +5,7 @@ include_once "includes/conexion.php";
 $id = intval(isset($_POST["id"]) ? $_POST["id"] : 0);
 $nombre = $_POST["nombre"];
 $numero = $_POST["numero"];
-$nombreArchivo = $_POST["imagen_actual"];
+$nombreArchivo = $_POST["imagen_actual"] ?? "";
 
 if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
     if ($id != 0) {
@@ -24,8 +24,6 @@ if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
 }
 
 $tipos = $_POST["tipos"];
-$tipo1 = isset($tipos[0]) ? $tipos[0] : null;
-$tipo2 = isset($tipos[1]) ? $tipos[1] : null;
 
 $habilidades = $_POST["habilidades"];
 $habilidad1 = isset($habilidades[0]) ? $habilidades[0] : null;
@@ -35,24 +33,32 @@ $habilidad3 = isset($habilidades[2]) ? $habilidades[2] : null;
 $descripcion = $_POST["descripcion"];
 
 if($id == 0) {
-    $sql = "INSERT INTO pokemon (idNoIncremental, dirImagen, nombre, tipo1, tipo2, habilidad1, habilidad2, habilidad3, descripcion) 
-VALUES ($numero, '$nombreArchivo', '$nombre', '$tipo1', '$tipo2','$habilidad1','$habilidad2','$habilidad3', '$descripcion')";
+    $sql = "INSERT INTO Pokemon (idNoIncremental, dirImagen, nombre, habilidad1, habilidad2, habilidad3, descripcion) 
+VALUES ($numero, '$nombreArchivo', '$nombre','$habilidad1','$habilidad2','$habilidad3', '$descripcion')";
     $conn->query($sql);
     $id = $conn->insert_id;
 }
 else {
-    $sql = "UPDATE pokemon
+    $sql = "UPDATE Pokemon
     SET idNoIncremental = $numero,
         nombre = '$nombre',
         dirImagen = '$nombreArchivo',
-        tipo1 = '$tipo1',
-        tipo2 = '$tipo2',
         habilidad1 = '$habilidad1',
         habilidad2 = '$habilidad2',
         habilidad3 = '$habilidad3',
         descripcion = '$descripcion'
-        WHERE id = $id;";
+        WHERE id = $id";
     $conn->query($sql);
+    $conn->query("DELETE FROM Pokemon_tipo WHERE pokemonId = $id");
+}
+
+foreach ($tipos as $tipo) {
+    $resultado = $conn->query("SELECT idTipo FROM Tipo WHERE nombre = '$tipo'");
+
+    if ($row = $resultado->fetch_assoc()) {
+        $idTipo = $row["idTipo"];
+        $conn->query("INSERT INTO Pokemon_tipo(pokemonId, tipoId) VALUES ($id, $idTipo)");
+    }
 }
 
 header("Location: detalle.php?id=" . $id);

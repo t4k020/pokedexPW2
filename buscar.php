@@ -9,13 +9,23 @@ $busqueda = $conn->real_escape_string(isset($_GET['termino']) ? $_GET['termino']
 // El el operador null coalescing (??) para evitar errores si está vacío.
 //real_escape_string: evita que los datos enviados por usuarios rompan la consulta o causen inyecciones SQL.
 
-$sql = "SELECT * FROM pokemon WHERE nombre LIKE '%$busqueda%'";
+$sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+    FROM pokemon P
+    LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+    LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+    WHERE P.nombre LIKE '%$busqueda%'
+    GROUP BY P.idNoIncremental";
 $result = $conn->query($sql);
 
 //Lógica para cuando no se encuentran resultados y tengo que devolver el mensaje de error + todos los pokemones
 if ($result->num_rows == 0) {
     $mensajeError = "Pokemon no encontrado";
-    $sqlTodos = "SELECT * FROM pokemon ORDER BY idNoIncremental ASC";
+    $sqlTodos = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
+FROM pokemon P
+LEFT JOIN Pokemon_tipo R ON P.id = R.pokemonId
+LEFT JOIN Tipo T ON T.idTipo = R.tipoId
+GROUP BY P.idNoIncremental
+ORDER BY P.idNoIncremental ASC";
     $result = $conn->query($sqlTodos);
 }
 ?>
@@ -75,13 +85,6 @@ if (isset($mensajeError)) {
         ?>
 
         <div class="card">
-            <?php if (isset($_SESSION['nombre']) && $_SESSION['nombre'] === 'admin'): ?>
-                <div class="card-actions">
-                    <a href="editar_formulario.php?id=<?php echo $p->id; ?>" class="btn-action edit">✎</a>
-                    <a href="borrar.php?id=<?php echo $p->id; ?>&img=<?php echo urlencode($p->dirImagen); ?>"
-                       class="btn-action delete" onclick="return confirm('¿Borrar?')">×</a>
-                </div>
-            <?php endif; ?>
 
             <a href="detalle.php?id=<?php echo $p->id; ?>">
                 <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>">

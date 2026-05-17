@@ -17,7 +17,7 @@ class Pokemon
         $this->dirImagen = "assets/" . $row['dirImagen'];
 
         // Limpiamos tipos y habilidades (filtramos nulos/vacíos)
-        $this->tipos = array_filter([$row['tipo1'], $row['tipo2']]);
+        $this->tipos = explode(",", $row['tipos']) ?? [];
         $this->habilidades = array_filter([$row['habilidad1'], $row['habilidad2'], $row['habilidad3']]);
     }
 
@@ -25,7 +25,7 @@ class Pokemon
     public function imprimirTipos()
     {
         foreach ($this->tipos as $t) {
-            echo "<span class='tipo'>$t</span> ";
+            echo "<img class='tipo' src='assets/tipo/$t.svg' alt='$t' title='$t'>";
         }
     }
 }
