@@ -88,9 +88,11 @@ $result = $conn->query($sql);
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="card h-100 bg-dark text-white text-center p-3 border-0 shadow">
 
-                        <a href="detalle.php?id=<?php echo $p->id; ?>">
-                            <img src="<?php echo $p->dirImagen; ?>" alt="<?php echo $p->nombre; ?>" class="img-fluid">
-                        </a>
+                        <div class="d-flex justify-content-center align-items-center" style="height: 240px;">
+                            <a href="detalle.php?id=<?php echo $p->id; ?>"><img src="<?php echo $p->dirImagen; ?>"
+                                     alt="<?php echo $p->nombre; ?>" class="img-fluid">
+                            </a>
+                        </div>
 
                         <p style="color: #888; margin: 0; margin-top: 10px;">#<?php echo $p->idNoIncremental; ?></p>
                         <h2 style="text-transform: capitalize; margin: 10px 0; font-size: 1.75rem;" class="fw-bold"><?php echo $p->nombre; ?></h2>
@@ -99,7 +101,7 @@ $result = $conn->query($sql);
                             <?php $p->imprimirTipos(); ?>
                         </div>
 
-                        <div class="habilidades mt-auto text-center">
+                        <div class="habilidades text-center">
                             <strong class="text-secondary">Habilidades:</strong>
                             <ul class="list-unstyled text-center mb-0 mt-1">
                                 <?php foreach ($p->habilidades as $h): ?>

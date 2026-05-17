@@ -145,7 +145,7 @@ body {
 
 .card {
     background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    text-align: center; width: 300px; border-top: 10px solid #ef5350;
+    text-align: center; max-width: 300px; width: 100%; margin: 0 auto; border-top: 10px solid #ef5350;
 }
 
 .pokemon-grid {
@@ -157,7 +157,7 @@ body {
     margin: 0 auto;
 }
 
-img { width: 200px; height: 200px; filter: drop-shadow(0 5px 5px #ccc); }
+img {max-height: 200px; object-fit: contain; filter: drop-shadow(0 5px 5px #ccc); }
 
 h1 { text-transform: capitalize; margin: 10px 0; color: #333; }
 
