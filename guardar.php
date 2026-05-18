@@ -2,9 +2,27 @@
 include_once "includes/conexion.php";
 /** @var mysqli $conn */
 
-$id = intval(isset($_POST["id"]) ? $_POST["id"] : 0);
+$id = intval($_POST["id"] ?? 0);
+
+$volver = $_SERVER['HTTP_REFERER'] ?? 'index.php';
+$separador = str_contains($volver, '?') ? '&' : '?';
+
 $nombre = $_POST["nombre"];
+$verificarNombre = $conn->query("SELECT id FROM Pokemon WHERE nombre = '$nombre' AND id != $id");
+if ($verificarNombre->num_rows > 0) {
+    $conn->close();
+    header("Location: " . $volver . $separador . "error=nombre");
+    exit();
+}
+
 $numero = $_POST["numero"];
+$verificarNumero = $conn->query("SELECT id FROM Pokemon WHERE idNoIncremental = $numero AND id != $id");
+if ($verificarNumero->num_rows > 0) {
+    $conn->close();
+    header("Location: " . $volver . $separador . "error=numero");
+    exit();
+}
+
 $nombreArchivo = $_POST["imagen_actual"] ?? "";
 
 if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
@@ -26,9 +44,9 @@ if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
 $tipos = $_POST["tipos"];
 
 $habilidades = $_POST["habilidades"];
-$habilidad1 = isset($habilidades[0]) ? $habilidades[0] : null;
-$habilidad2 = isset($habilidades[1]) ? $habilidades[1] : null;
-$habilidad3 = isset($habilidades[2]) ? $habilidades[2] : null;
+$habilidad1 = $habilidades[0] ?? null;
+$habilidad2 = $habilidades[1] ?? null;
+$habilidad3 = $habilidades[2] ?? null;
 
 $descripcion = $_POST["descripcion"];
 

@@ -64,18 +64,24 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 <h1 class="mb-4 h2 text-center fw-bold text-warning">Crear Nuevo Pokémon</h1>
 
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Nombre</label>
-                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre" placeholder="Nombre del Pokémon" required>
+                    <label class="form-label fw-semibold">Nombre<?=((isset($_GET['error']) && $_GET['error'] == 'nombre')?
+                                '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese nombre!</span>':'')?>
+                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre" placeholder="Nombre del Pokémon" required>
+                    </label>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">#Número Identificador</label>
-                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" placeholder="Ej: 25" pattern="\d+" min="1" required>
+                    <label class="form-label fw-semibold">#Número Identificador
+                        <?=((isset($_GET['error']) && $_GET['error'] == 'numero')?
+                                '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese número!</span>':'')?>
+                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" placeholder="Ej: 25" pattern="\d+" min="1" required>
+                    </label>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Imagen</label>
-                    <input class="form-control bg-secondary text-white border-0" type="file" name="imagen" required>
+                    <label class="form-label fw-semibold">Imagen
+                        <input class="form-control bg-secondary text-white border-0" type="file" name="imagen" required>
+                    </label>
                 </div>
 
                 <div class="mb-4">
@@ -108,17 +114,19 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Habilidades</label>
-                    <div class="d-flex flex-column gap-2">
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 1">
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 2">
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad Oculta">
-                    </div>
+                    <label class="form-label fw-semibold">Habilidades
+                        <div class="d-flex flex-column gap-2">
+                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 1">
+                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 2">
+                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad Oculta">
+                        </div>
+                    </label>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Descripción</label>
-                    <textarea class="form-control bg-secondary text-white border-0 ps-3" name="descripcion" rows="3" placeholder="Descripción del Pokémon..."></textarea>
+                    <label class="form-label fw-semibold">Descripción
+                        <textarea class="form-control bg-secondary text-white border-0 ps-3" name="descripcion" rows="3" placeholder="Descripción del Pokémon..."></textarea>
+                    </label>
                 </div>
 
                 <div class="d-flex gap-2 mt-2">
