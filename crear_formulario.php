@@ -66,22 +66,21 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Nombre<?=((isset($_GET['error']) && $_GET['error'] == 'nombre')?
                                 '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese nombre!</span>':'')?>
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre" placeholder="Nombre del Pokémon" required>
                     </label>
+                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre" placeholder="Nombre del Pokémon" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">#Número Identificador
                         <?=((isset($_GET['error']) && $_GET['error'] == 'numero')?
                                 '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese número!</span>':'')?>
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" placeholder="Ej: 25" pattern="\d+" min="1" required>
                     </label>
+                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" placeholder="Ej: 25" pattern="\d+" min="1" required>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Imagen
-                        <input class="form-control bg-secondary text-white border-0" type="file" name="imagen" required>
-                    </label>
+                    <label class="form-label fw-semibold">Imagen</label>
+                    <input class="form-control bg-secondary text-white border-0" type="file" name="imagen" required>
                 </div>
 
                 <div class="mb-4">
@@ -114,19 +113,17 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Habilidades
-                        <div class="d-flex flex-column gap-2">
-                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 1">
-                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 2">
-                            <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad Oculta">
-                        </div>
-                    </label>
+                    <label class="form-label fw-semibold">Habilidades</label>
+                    <div class="d-flex flex-column gap-2">
+                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 1">
+                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad 2">
+                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]" placeholder="Habilidad Oculta">
+                    </div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Descripción
-                        <textarea class="form-control bg-secondary text-white border-0 ps-3" name="descripcion" rows="3" placeholder="Descripción del Pokémon..."></textarea>
-                    </label>
+                    <label class="form-label fw-semibold">Descripción</label>
+                    <textarea class="form-control bg-secondary text-white border-0 ps-3" name="descripcion" rows="3" placeholder="Descripción del Pokémon..."></textarea>
                 </div>
 
                 <div class="d-flex gap-2 mt-2">

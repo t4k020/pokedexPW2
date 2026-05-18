@@ -92,18 +92,18 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Nombre<?=((isset($_GET['error']) && $_GET['error'] == 'nombre') ?
                                 '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese nombre!</span>':'')?>
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre"
-                               placeholder="Nombre del Pokémon" value="<?php echo $nombre; ?>" required>
                     </label>
+                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="nombre"
+                           placeholder="Nombre del Pokémon" value="<?php echo $nombre; ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">#Número Identificador
                         <?=((isset($_GET['error']) && $_GET['error'] == 'numero')?
                                 '<span class="text-danger ms-2 small fw-bold">¡Ya existe ese número!</span>':'')?>
-                        <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" pattern="\d+" min="1"
-                               placeholder="Número" value="<?php echo $id_pokedex; ?>" required>
                     </label>
+                    <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="numero" pattern="\d+" min="1"
+                           placeholder="Número" value="<?php echo $id_pokedex; ?>" required>
                 </div>
 
                 <div class="mb-4">
@@ -143,7 +143,7 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Habilidades
+                    <label class="form-label fw-semibold">Habilidades</label>
                     <div class="d-flex flex-column gap-2">
                         <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]"
                                placeholder="Habilidad 1" value="<?php echo $habilidades[0] ?? ""; ?>">
@@ -152,14 +152,12 @@ $result_tipos = $conn->query("SELECT * FROM tipo");
                         <input class="form-control bg-secondary text-white border-0 ps-3" type="text" name="habilidades[]"
                                placeholder="Habilidad Oculta" value="<?php echo $habilidades[2] ?? ""; ?>">
                     </div>
-                    </label>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Descripción
+                    <label class="form-label fw-semibold">Descripción</label>
                     <textarea class="form-control bg-secondary text-white border-0 ps-3" name="descripcion" rows="3"
                               placeholder="Descripción del Pokémon..."><?php echo $descripcion; ?></textarea>
-                    </label>
                 </div>
 
                 <div class="d-flex gap-2 mt-2">
