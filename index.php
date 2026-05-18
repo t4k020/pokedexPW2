@@ -2,7 +2,6 @@
 session_start();
 require_once "clases/Pokemon.php";
 include_once "includes/conexion.php";
-$conn = new mysqli("localhost", "root", "", "pokedex");
 
 $sql = "SELECT P.*, GROUP_CONCAT(T.nombre) AS tipos
 FROM pokemon P
